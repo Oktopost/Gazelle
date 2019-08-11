@@ -1,0 +1,181 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "ec5132f82215300b944a9456c782a7a2",
+    "packages": [
+        {
+            "name": "oktopost/objection",
+            "version": "1.0.13",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Oktopost/Objection.git",
+                "reference": "ed779b56a96e395ae1c16273f73cf5e16a0f79f3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Oktopost/Objection/zipball/ed779b56a96e395ae1c16273f73cf5e16a0f79f3",
+                "reference": "ed779b56a96e395ae1c16273f73cf5e16a0f79f3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5-stable",
+                "unstable-cacao/traitor": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Objection": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexey Puchkov",
+                    "role": "Developer",
+                    "email": "alexey@oktopost.com"
+                },
+                {
+                    "name": "Marina Sherstuk",
+                    "role": "Developer",
+                    "email": "marinashers@gmail.com"
+                },
+                {
+                    "name": "Daniel Podrabinek",
+                    "role": "Developer",
+                    "email": "dpodrabinek@oktopost.com"
+                }
+            ],
+            "description": "Objects in PHP",
+            "homepage": "https://github.com/Oktopost/Objection",
+            "time": "2017-10-19T05:25:35+00:00"
+        },
+        {
+            "name": "oktopost/unit-cover",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Oktopost/UnitCover.git",
+                "reference": "e564a75fab982dc198675beebb9f9ac37580dd32"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Oktopost/UnitCover/zipball/e564a75fab982dc198675beebb9f9ac37580dd32",
+                "reference": "e564a75fab982dc198675beebb9f9ac37580dd32",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Alexey Puchkov",
+                    "role": "Developer",
+                    "email": "alexey@oktopost.com"
+                }
+            ],
+            "time": "2018-04-12T08:48:53+00:00"
+        },
+        {
+            "name": "unstable-cacao/structura",
+            "version": "2.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/unstable-cacao/Structura.git",
+                "reference": "628e55939410c1800c214a7b3d4eb5bc176f22b4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/unstable-cacao/Structura/zipball/628e55939410c1800c214a7b3d4eb5bc176f22b4",
+                "reference": "628e55939410c1800c214a7b3d4eb5bc176f22b4",
+                "shasum": ""
+            },
+            "require": {
+                "oktopost/objection": "^1.0",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "oktopost/unit-cover": "^1.0",
+                "phpunit/phpunit": "^6.2",
+                "satooshi/php-coveralls": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Structura": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexey Puchkov",
+                    "role": "Developer",
+                    "email": "alexey.pkv@gmail.com"
+                }
+            ],
+            "homepage": "https://github.com/unstable-cacao/Structura",
+            "time": "2019-07-05T17:07:32+00:00"
+        },
+        {
+            "name": "unstable-cacao/traitor",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/unstable-cacao/Traitor.git",
+                "reference": "81ccd1c1e9975235b8e6a69bbecccf987b79cd15"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/unstable-cacao/Traitor/zipball/81ccd1c1e9975235b8e6a69bbecccf987b79cd15",
+                "reference": "81ccd1c1e9975235b8e6a69bbecccf987b79cd15",
+                "shasum": ""
+            },
+            "require": {
+                "oktopost/unit-cover": "^1.0",
+                "php": ">=7.1-stable"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Traitor\\": "Source/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexey Puchkov",
+                    "email": "alexey.pkv@gmail.com"
+                },
+                {
+                    "name": "Marina Puchkov",
+                    "email": "marinashers@gmail.com"
+                }
+            ],
+            "time": "2019-01-13T11:46:51+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
