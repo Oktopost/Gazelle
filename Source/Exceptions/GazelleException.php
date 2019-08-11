@@ -2,7 +2,7 @@
 namespace Gazelle\Exceptions;
 
 
-class GazelleException
+class GazelleException extends \Exception
 {
 	
 }

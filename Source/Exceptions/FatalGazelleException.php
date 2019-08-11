@@ -2,7 +2,7 @@
 namespace Gazelle\Exceptions;
 
 
-class FatalGazelleException
+class FatalGazelleException extends \Error
 {
 	
 }
