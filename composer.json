@@ -3,7 +3,8 @@
 	"type": "lib",
 	"require": 
 	{
-		"unstable-cacao/structura": "^2.0"
+		"unstable-cacao/structura": "^2.0",
+		"oktopost/jsonencode": "^1.0"
 	},
 	"license": "MIT",
 	"authors": 
