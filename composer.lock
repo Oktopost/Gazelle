@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb0ef2929232cc0ff95c26ecc1682018",
+    "content-hash": "4496156f4e617a33b7d84c6a2e947e2a",
     "packages": [
         {
             "name": "oktopost/jsonencode",
