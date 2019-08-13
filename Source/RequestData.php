@@ -2,9 +2,9 @@
 namespace Gazelle;
 
 
+use Structura\URL;
 use Structura\Arrays;
 use Structura\Strings;
-use Structura\URL;
 
 
 class RequestData implements IRequestData
