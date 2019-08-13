@@ -6,7 +6,7 @@ use Gazelle\IRequestData;
 use Gazelle\IResponseData;
 use Gazelle\IRequestConfig;
 use Gazelle\AbstractConnectionDecorator;
-use Gazelle\Exceptions\TimeoutException;
+use Gazelle\Exceptions\ConnectionNotEstablishException;
 use Gazelle\Exceptions\FatalGazelleException;
 
 
@@ -26,7 +26,7 @@ class RetryDecorator extends AbstractConnectionDecorator
 			{
 				return $this->invokeChild($originalRequest, $originalConfig);
 			}
-			catch (TimeoutException $te)
+			catch (ConnectionNotEstablishException $te)
 			{
 				continue;
 			}
