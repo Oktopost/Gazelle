@@ -127,6 +127,11 @@ class ResponseData implements IResponseData
 		return $this->code < 400;
 	}
 	
+	public function isComplete(): bool
+	{
+		return $this->code < 300;
+	}
+	
 	public function isRedirect(): bool
 	{
 		return 300 <= $this->code && $this->code < 400;

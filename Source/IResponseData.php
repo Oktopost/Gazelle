@@ -19,6 +19,7 @@ interface IResponseData
 	public function getJSON(): ?array;
 	
 	public function isSuccessful(): bool;
+	public function isComplete(): bool;
 	public function isRedirect(): bool;
 	public function isFailed(): bool;
 }
