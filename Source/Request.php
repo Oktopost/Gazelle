@@ -2,86 +2,113 @@
 namespace Gazelle;
 
 
+use Gazelle\Exceptions\JSONExpectedException;
+
+
 class Request extends RequestData implements IRequest
 {
 	/** @var IRequestConfig */
 	private $config;
 	
+	/** @var IConnectionBuilder */
+	private $builder;
 	
-	private function __construct(IRequestConfig $config)
+	
+	public function __construct(IRequestConfig $config, IConnectionBuilder $builder)
 	{
 		$this->config = $config;
+		$this->builder = $builder;
 	}
-	
 	
 	public function __clone()
 	{
 		$this->config = clone $this->config;
+		$this->builder = clone $this->builder;
 	}
 	
 	
+	public function send(): IResponseData
+	{
+		$connection = $this->builder->get();
+		return $connection->request($this, $this->config);
+	}
+	
 	public function get(): IResponseData
 	{
-		// TODO: Implement get() method.
+		$this->setMethod(HTTPMethod::GET);
+		return $this->send();
 	}
 	
 	public function put(): IResponseData
 	{
-		// TODO: Implement put() method.
+		$this->setMethod(HTTPMethod::PUT);
+		return $this->send();
 	}
 	
 	public function post(): IResponseData
 	{
-		// TODO: Implement post() method.
+		$this->setMethod(HTTPMethod::POST);
+		return $this->send();
 	}
 	
 	public function head(): IResponseData
 	{
-		// TODO: Implement head() method.
+		$this->setMethod(HTTPMethod::HEAD);
+		return $this->send();
 	}
 	
 	public function delete(): IResponseData
 	{
-		// TODO: Implement delete() method.
+		$this->setMethod(HTTPMethod::DELETE);
+		return $this->send();
 	}
 	
 	public function options(): IResponseData
 	{
-		// TODO: Implement options() method.
+		$this->setMethod(HTTPMethod::OPTIONS);
+		return $this->send();
 	}
 	
 	public function patch(): IResponseData
 	{
-		// TODO: Implement patch() method.
-	}
-	
-	public function send(): IResponseData
-	{
-		// TODO: Implement send() method.
+		$this->setMethod(HTTPMethod::PATCH);
+		return $this->send();
 	}
 	
 	public function queryCode(): int
 	{
-		// TODO: Implement queryCode() method.
+		$this->setMethod(HTTPMethod::GET);
+		return $this->send()->getCode();
 	}
 	
 	public function queryOK(): bool
 	{
-		// TODO: Implement queryOK() method.
+		$this->setMethod(HTTPMethod::GET);
+		return $this->send()->isSuccessful();
 	}
 	
 	public function queryHeaders(): array
 	{
-		// TODO: Implement queryHeaders() method.
+		$this->setMethod(HTTPMethod::GET);
+		return $this->send()->getHeaders();
 	}
 	
 	public function queryBody(): string
 	{
-		// TODO: Implement queryBody() method.
+		$this->setMethod(HTTPMethod::GET);
+		return $this->send()->getBody();
 	}
 	
 	public function queryJSON(): array
 	{
-		// TODO: Implement queryJSON() method.
+		$this->setMethod(HTTPMethod::GET);
+		$result = $this->send()->getJSON();
+		
+		if (!is_array($result))
+		{
+			throw new JSONExpectedException($result);
+		}
+		
+		return $result;
 	}
 }
