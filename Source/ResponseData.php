@@ -4,6 +4,7 @@ namespace Gazelle;
 
 use Structura\Arrays;
 
+
 class ResponseData implements IResponseData
 {
 	private $code;

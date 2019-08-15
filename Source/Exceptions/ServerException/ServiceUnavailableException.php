@@ -2,7 +2,7 @@
 namespace Gazelle\Exceptions\ServerException;
 
 
-use Gazelle\Exceptions\ServerErrorException;
+use Gazelle\Exceptions\Response\ServerErrorException;
 use Gazelle\Exceptions\Utils\TRequestException;
 
 

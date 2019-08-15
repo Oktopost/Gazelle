@@ -2,10 +2,11 @@
 namespace Gazelle;
 
 
+use Gazelle\Utils\ICurlOptions;
 use Structura\URL;
 
 
-interface IRequestData
+interface IRequestData extends ICurlOptions
 {
 	public function getMethod(): string;
 	public function getURL(): string;
@@ -60,11 +61,11 @@ interface IRequestData
 	public function setMethod(string $method): IRequestData;
 	public function setHeader(string $header, string $value): IRequestData;
 	public function setHeaders(array $headers, bool $mergeSingleValue = false): IRequestData;
+	public function setBody(?string $body): IRequestData;
 	
 	/**
-	 * Non string values will be treated as json.
-	 * @param string|array|\stdClass $body
+	 * @param array|\stdClass $body
 	 * @return IRequestData
 	 */
-	public function setBody($body): IRequestData;
+	public function setJsonBody($body): IRequestData;
 }

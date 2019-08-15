@@ -2,11 +2,14 @@
 namespace Gazelle;
 
 
+use Gazelle\Utils\OptionsConfig;
+
 class RequestConfig implements IRequestConfig
 {
 	private $connectionTimeout	= 10.0;
-	private $requestTimeout		= 10.0;
+	private $executionTimeout	= 10.0;
 	private $maxRedirects		= 3;
+	private $curlOptions		= [CURLOPT_RETURNTRANSFER => 1];
 	
 	
 	public function getConnectionTimeout(): float
@@ -14,35 +17,72 @@ class RequestConfig implements IRequestConfig
 		return $this->connectionTimeout;
 	}
 	
-	public function getRequestTimeout(): float
+	public function getExecutionTimeout(): float
 	{
-		return $this->requestTimeout;
+		return $this->executionTimeout;
 	}
 	
-	public function getMaxRedirects(): float
+	public function getMaxRedirects(): int
 	{
 		return $this->maxRedirects;
 	}
 	
-	
-	public function setTimeout(float $connectionSec, ?float $requestSec = null): void
+	public function getCurlOptions(): array
 	{
-		$this->connectionTimeout = $connectionSec;
-		$this->requestTimeout = $requestSec;
+		return $this->curlOptions;
 	}
 	
-	public function setConnectionTimeout(float $sec): void
+	public function hasCurlOptions(): bool
+	{
+		return (bool)$this->curlOptions;
+	}
+	
+	
+	public function setConnectionTimeout(float $sec): IRequestConfig
 	{
 		$this->connectionTimeout = $sec;
+		return $this;
 	}
 	
-	public function setRequestTimeout(float $sec): void
+	public function setExecutionTimeout(float $sec, ?float $connectionSec = null): IRequestConfig
 	{
-		$this->requestTimeout = $sec;
+		$this->executionTimeout = $sec;
+		
+		if ($connectionSec)
+		{
+			$this->connectionTimeout = $connectionSec;
+		}
+		
+		return $this;
 	}
 	
-	public function setMaxRedirects(int $max): void
+	public function setMaxRedirects(int $max): IRequestConfig
 	{
 		$this->maxRedirects = $max;
+		return $this;
+	}
+	
+	public function setCurlOption(int $option, $value): IRequestConfig
+	{
+		$this->curlOptions[$option] = $value;
+		return $this;
+	}
+	
+	public function setCurlOptions(array $options): IRequestConfig
+	{
+		$this->curlOptions = array_merge($this->curlOptions, $options);
+		return $this;
+	}
+	
+	
+	public function toCurlOptions(): array
+	{
+		return
+			$this->curlOptions +
+			OptionsConfig::setRedirects($this) + 
+			OptionsConfig::setTimeouts($this) + 
+			[ 
+				CURLOPT_HEADER	=> 1
+			];
 	}
 }

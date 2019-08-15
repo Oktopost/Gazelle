@@ -2,6 +2,8 @@
 namespace Gazelle;
 
 
+use Gazelle\Exceptions\FatalGazelleException;
+use Gazelle\Utils\OptionsConfig;
 use Structura\URL;
 use Structura\Arrays;
 use Structura\Strings;
@@ -16,6 +18,11 @@ class RequestData implements IRequestData
 	/** @var URL */
 	private $url;
 	
+	
+	public function __construct()
+	{
+		$this->url = new URL();
+	}
 	
 	
 	public function getURL(): string
@@ -92,7 +99,7 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param string|URL $url
-	 * @return IRequestData
+	 * @return IRequestData|static
 	 */
 	public function setURL($url): IRequestData
 	{
@@ -108,18 +115,31 @@ class RequestData implements IRequestData
 		return $this;
 	}
 	
+	/**
+	 * @param string $scheme
+	 * @return IRequestData|static
+	 */
 	public function setScheme(string $scheme): IRequestData
 	{
 		$this->url->Scheme = $scheme;
 		return $this;
 	}
 	
+	/**
+	 * @param string $domain
+	 * @return IRequestData|static
+	 */
 	public function setDomain(string $domain): IRequestData
 	{
 		$this->url->Host = $domain;
 		return $this;
 	}
 	
+	/**
+	 * @param string $path
+	 * @param bool $clean
+	 * @return IRequestData|static
+	 */
 	public function addPath(string $path, bool $clean = true): IRequestData
 	{
 		$current = $this->url->Path;
@@ -149,6 +169,10 @@ class RequestData implements IRequestData
 		return $this;
 	}
 	
+	/**
+	 * @param string $path
+	 * @return IRequestData|static
+	 */
 	public function setPath(string $path): IRequestData
 	{
 		$this->url->Path = $path;
@@ -158,7 +182,7 @@ class RequestData implements IRequestData
 	/**
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return IRequestData
+	 * @return IRequestData|static
 	 */
 	public function setQueryParam(string $name, $value): IRequestData
 	{
@@ -168,7 +192,7 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param string[]|string[][] $params
-	 * @return IRequestData
+	 * @return IRequestData|static
 	 */
 	public function setQueryParams(array $params): IRequestData
 	{
@@ -176,18 +200,32 @@ class RequestData implements IRequestData
 		return $this;
 	}
 	
+	/**
+	 * @param string $method
+	 * @return IRequestData|static
+	 */
 	public function setMethod(string $method): IRequestData
 	{
 		$this->method = $method;
 		return $this;
 	}
 	
+	/**
+	 * @param string $header
+	 * @param string $value
+	 * @return IRequestData|static
+	 */
 	public function setHeader(string $header, string $value): IRequestData
 	{
 		$this->headers[$header] = $value;
 		return $this;
 	}
 	
+	/**
+	 * @param array $headers
+	 * @param bool $mergeSingleValue
+	 * @return IRequestData|static
+	 */
 	public function setHeaders(array $headers, bool $mergeSingleValue = false): IRequestData
 	{
 		if (!$mergeSingleValue)
@@ -211,21 +249,51 @@ class RequestData implements IRequestData
 	}
 	
 	/**
-	 * Non string values will be treated as json.
-	 * @param string|array|\stdClass $body
-	 * @return IRequestData
+	 * @param null|string $body
+	 * @return IRequestData|static
 	 */
-	public function setBody($body): IRequestData
+	public function setBody(?string $body): IRequestData
 	{
-		if (is_string($body))
+		if (is_null($body))
+		{
+			$this->body = null;
+		}
+		else if (is_string($body))
 		{
 			$this->body = $body;
 		}
 		else
 		{
-			$this->body = jsonencode($body);
+			throw new FatalGazelleException('Invalid data type passed');
 		}
 		
 		return $this;
+	}
+	
+	/**
+	 * @param array|\stdClass $body
+	 * @return IRequestData|static
+	 */
+	public function setJsonBody($body): IRequestData
+	{
+		$this->body = jsonencode($body);
+		
+		if (is_null($this->body))
+		{
+			throw new FatalGazelleException(
+				'Body must be null, string or an object serializable with json_encode');
+		}
+		
+		return $this;
+	}
+	
+	
+	public function toCurlOptions(): array
+	{
+		return 
+			OptionsConfig::setURL($this) + 
+			OptionsConfig::setBody($this) +  
+			OptionsConfig::setMethod($this) +
+			OptionsConfig::setHeaders($this);
 	}
 }

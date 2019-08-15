@@ -58,14 +58,6 @@ class ConnectionBuilder implements IConnectionBuilder
 	}
 	
 	
-	public function __clone()
-	{
-		$this->decorators			= clone $this->decorators;
-		$this->connection			= clone $this->connection;
-		$this->connectionProvider	= clone $this->connectionProvider;
-	}
-	
-	
 	public function setMainObject($connection)
 	{
 		if (is_callable($connection))
@@ -94,9 +86,16 @@ class ConnectionBuilder implements IConnectionBuilder
 		}
 	}
 	
-	public function addDecorators($decorators): void
+	public function addDecorators($decorators, bool $last): void
 	{
-		$this->decorators = Arrays::merge($this->decorators, $decorators);
+		if ($last)
+		{
+			$this->decorators = Arrays::merge($this->decorators, $decorators);
+		}
+		else
+		{
+			$this->decorators = Arrays::merge($decorators, $this->decorators);
+		}
 	}
 	
 	

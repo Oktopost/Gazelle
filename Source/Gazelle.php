@@ -2,6 +2,9 @@
 namespace Gazelle;
 
 
+use Gazelle\Connections\CurlConnection;
+
+
 class Gazelle
 {
 	/** @var IRequestConfig */
@@ -19,6 +22,8 @@ class Gazelle
 		$this->config = new RequestConfig();
 		$this->builder = new ConnectionBuilder();
 		$this->template = new Request($this->config, $this->builder);
+		
+		$this->builder->setMainObject(CurlConnection::class);
 	}
 	
 	
@@ -28,9 +33,9 @@ class Gazelle
 		return $this;
 	}
 	
-	public function addDecorator($decorator): Gazelle
+	public function addDecorator($decorator, bool $last = true): Gazelle
 	{
-		$this->builder->addDecorators($decorator);
+		$this->builder->addDecorators($decorator, $last);
 		return $this;
 	}
 	
@@ -45,8 +50,16 @@ class Gazelle
 		return $this->template; 
 	}
 	
-	public function request()
+	public function request($url = null, array $headers = []): Request
 	{
-		return clone $this->template;
+		$request = clone $this->template;
+		
+		if ($url)
+			$request->setURL($url);
+		
+		if ($headers)
+			$request->setHeaders($headers);
+		
+		return $request;
 	}
 }

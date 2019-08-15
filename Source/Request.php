@@ -2,7 +2,7 @@
 namespace Gazelle;
 
 
-use Gazelle\Exceptions\JSONExpectedException;
+use Gazelle\Exceptions\Response\JSONExpectedException;
 
 
 class Request extends RequestData implements IRequest
@@ -16,6 +16,7 @@ class Request extends RequestData implements IRequest
 	
 	public function __construct(IRequestConfig $config, IConnectionBuilder $builder)
 	{
+		parent::__construct();
 		$this->config = $config;
 		$this->builder = $builder;
 	}
@@ -110,5 +111,31 @@ class Request extends RequestData implements IRequest
 		}
 		
 		return $result;
+	}
+	
+	
+	public function config(): IRequestConfig
+	{
+		return $this->config;
+	}
+	
+	
+	public function setCurlOption(int $option, $value): Request
+	{
+		$this->config->setCurlOption($option, $value);
+		return $this;
+	}
+	
+	public function setCurlOptions(array $options): Request
+	{
+		$this->config->setCurlOptions($options);
+		return $this;
+	}
+	
+	
+	public function getAllCurlOptions(): array
+	{
+		return $this->config->toCurlOptions() + 
+			$this->toCurlOptions();
 	}
 }

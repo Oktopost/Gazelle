@@ -3,7 +3,7 @@ namespace Gazelle\Exceptions\ClientException;
 
 
 use Gazelle\IResponseData;
-use Gazelle\Exceptions\ClientErrorException;
+use Gazelle\Exceptions\Response\ClientErrorException;
 
 
 class BadRequestException extends ClientErrorException

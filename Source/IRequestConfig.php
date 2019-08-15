@@ -2,14 +2,21 @@
 namespace Gazelle;
 
 
-interface IRequestConfig
+use Gazelle\Utils\ICurlOptions;
+
+
+interface IRequestConfig extends ICurlOptions
 {
 	public function getConnectionTimeout(): float;
-	public function getRequestTimeout(): float;
-	public function getMaxRedirects(): float;
+	public function getExecutionTimeout(): float;
+	public function getMaxRedirects(): int;
+	public function getCurlOptions(): array;
+	public function hasCurlOptions(): bool;
 	
-	public function setTimeout(float $connectionSec, float $requestSec): void;
-	public function setConnectionTimeout(float $sec): void;
-	public function setRequestTimeout(float $sec): void;
-	public function setMaxRedirects(int $max): void;
+	public function setConnectionTimeout(float $sec): IRequestConfig;
+	public function setExecutionTimeout(float $sec, ?float $connectionSec = null): IRequestConfig;
+	public function setMaxRedirects(int $max): IRequestConfig;
+	
+	public function setCurlOption(int $option, $value): IRequestConfig;
+	public function setCurlOptions(array $options): IRequestConfig;
 }

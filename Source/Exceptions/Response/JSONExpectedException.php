@@ -1,8 +1,9 @@
 <?php
-namespace Gazelle\Exceptions;
+namespace Gazelle\Exceptions\Response;
 
 
 use Gazelle\IResponseData;
+use Gazelle\Exceptions\ResponseException;
 
 
 class JSONExpectedException extends ResponseException
