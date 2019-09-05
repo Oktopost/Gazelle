@@ -2,10 +2,11 @@
 namespace Gazelle;
 
 
-use Gazelle\Exceptions\Response\JSONExpectedException;
+use Gazelle\Exceptions\Response\Unexpected\InvalidJSONResponseException;
+use Gazelle\Exceptions\Response\UnexpectedResponseException;
 
 
-class Request extends RequestSettings implements IRequest
+class Request extends RequestParams implements IRequest
 {
 	/** @var IRequestConfig */
 	private $config;
@@ -105,9 +106,9 @@ class Request extends RequestSettings implements IRequest
 		$this->setMethod(HTTPMethod::GET);
 		$result = $this->send()->getJSON();
 		
-		if (!is_array($result))
+		if (!is_null($result))
 		{
-			throw new JSONExpectedException($result);
+			throw new InvalidJSONResponseException($result);
 		}
 		
 		return $result;

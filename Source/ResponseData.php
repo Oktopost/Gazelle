@@ -13,14 +13,14 @@ class ResponseData implements IResponseData
 	private $body			= null;
 	private $bodyCallback	= null;
 	
-	/** @var IRequestSettings */
+	/** @var IRequestParams */
 	private $originalRequest;
 	
 	/** @var IRequestConfig */
 	private $requestConfig;
 	
 	
-	public function __construct(IRequestSettings $requestData, IRequestConfig $config)
+	public function __construct(IRequestParams $requestData, IRequestConfig $config)
 	{
 		$this->originalRequest = $requestData;
 		$this->requestConfig = $config;
@@ -52,7 +52,7 @@ class ResponseData implements IResponseData
 	}
 	
 	
-	public function requestData(): IRequestSettings
+	public function requestData(): IRequestParams
 	{
 		return $this->originalRequest;
 	}

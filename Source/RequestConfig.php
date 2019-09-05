@@ -7,10 +7,12 @@ use Gazelle\Utils\OptionsConfig;
 
 class RequestConfig implements IRequestConfig
 {
-	private $connectionTimeout	= 10.0;
-	private $executionTimeout	= 10.0;
-	private $maxRedirects		= 3;
-	private $curlOptions		= [CURLOPT_RETURNTRANSFER => 1];
+	
+	private $throwOnFailedResponse	= true;
+	private $connectionTimeout		= 10.0;
+	private $executionTimeout		= 10.0;
+	private $maxRedirects			= 3;
+	private $curlOptions			= [CURLOPT_RETURNTRANSFER => 1];
 	
 	
 	public function getConnectionTimeout(): float
@@ -73,6 +75,18 @@ class RequestConfig implements IRequestConfig
 	{
 		$this->curlOptions = array_merge($this->curlOptions, $options);
 		return $this;
+	}
+	
+	
+	public function setParseResponseForErrors(bool $throw): IRequestConfig
+	{
+		$this->throwOnFailedResponse = $throw;
+		return $this;
+	}
+	
+	public function getParseResponseForErrors(): bool
+	{
+		return $this->throwOnFailedResponse;
 	}
 	
 	

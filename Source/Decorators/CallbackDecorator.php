@@ -4,7 +4,7 @@ namespace Gazelle\Decorators;
 
 use Gazelle\IResponseData;
 use Gazelle\IRequestConfig;
-use Gazelle\IRequestSettings;
+use Gazelle\IRequestParams;
 use Gazelle\AbstractConnectionDecorator;
 use Gazelle\Exceptions\FatalGazelleException;
 
@@ -20,7 +20,7 @@ class CallbackDecorator extends AbstractConnectionDecorator
 	}
 	
 	
-	public function request(IRequestSettings $requestData, IRequestConfig $config): IResponseData
+	public function request(IRequestParams $requestData, IRequestConfig $config): IResponseData
 	{
 		$callback = $this->callback;
 		$result = $callback($requestData, $config);

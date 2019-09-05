@@ -4,7 +4,7 @@ namespace Gazelle\Decorators;
 
 use Gazelle\IResponseData;
 use Gazelle\IRequestConfig;
-use Gazelle\IRequestSettings;
+use Gazelle\IRequestParams;
 use Gazelle\AbstractConnectionDecorator;
 use Gazelle\Exceptions\FatalGazelleException;
 use Gazelle\Exceptions\ConnectionNotEstablishException;
@@ -15,7 +15,7 @@ class RetryDecorator extends AbstractConnectionDecorator
 	private $max = 3;
 	
 	
-	private function executeSafe(IRequestSettings $requestData, IRequestConfig $config): ?IResponseData
+	private function executeSafe(IRequestParams $requestData, IRequestConfig $config): ?IResponseData
 	{
 		$originalRequest	= clone $requestData;
 		$originalConfig		= clone $config;
@@ -35,7 +35,7 @@ class RetryDecorator extends AbstractConnectionDecorator
 		return null;
 	}
 	
-	private function executeWithRetry(IRequestSettings $requestData, IRequestConfig $config): IResponseData
+	private function executeWithRetry(IRequestParams $requestData, IRequestConfig $config): IResponseData
 	{
 		$result = $this->executeSafe($requestData, $config);
 		
@@ -48,7 +48,7 @@ class RetryDecorator extends AbstractConnectionDecorator
 	}
 	
 	
-	protected function shouldRetry(IRequestSettings $requestData, IRequestConfig $config): bool
+	protected function shouldRetry(IRequestParams $requestData, IRequestConfig $config): bool
 	{
 		return true;
 	}
@@ -63,7 +63,7 @@ class RetryDecorator extends AbstractConnectionDecorator
 	}
 	
 	
-	public function request(IRequestSettings $requestData, IRequestConfig $config): IResponseData
+	public function request(IRequestParams $requestData, IRequestConfig $config): IResponseData
 	{
 		if ($this->shouldRetry($requestData, $config))
 		{

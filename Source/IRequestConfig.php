@@ -19,4 +19,7 @@ interface IRequestConfig extends IWithCurlOptions
 	
 	public function setCurlOption(int $option, $value): IRequestConfig;
 	public function setCurlOptions(array $options): IRequestConfig;
+	
+	public function getParseResponseForErrors(): bool;
+	public function setParseResponseForErrors(bool $throw): IRequestConfig;
 }

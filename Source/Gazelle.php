@@ -45,7 +45,7 @@ class Gazelle
 		return $this->config;
 	}
 	
-	public function template(): IRequestSettings
+	public function template(): IRequestParams
 	{
 		return $this->template; 
 	}

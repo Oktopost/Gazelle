@@ -8,7 +8,7 @@ use Structura\Arrays;
 
 use Gazelle\HTTPMethod;
 use Gazelle\IRequestConfig;
-use Gazelle\IRequestSettings;
+use Gazelle\IRequestParams;
 
 
 class OptionsConfig
@@ -54,7 +54,7 @@ class OptionsConfig
 		];
 	}
 	
-	public static function setHeaders(IRequestSettings $data): array 
+	public static function setHeaders(IRequestParams $data): array 
 	{
 		$headers = $data->getHeaders();
 		$result = [];
@@ -76,14 +76,14 @@ class OptionsConfig
 		return $result ? [CURLOPT_HTTPHEADER => $headers] : [];
 	}
 	
-	public static function setBody(IRequestSettings $data): array 
+	public static function setBody(IRequestParams $data): array 
 	{
 		$body = $data->getBody();
 		
 		return $body ? [CURLOPT_POSTFIELDS => $body] : [];
 	}
 	
-	public static function setMethod(IRequestSettings $data): array 
+	public static function setMethod(IRequestParams $data): array 
 	{
 		$method = $data->getMethod();
 		
@@ -95,7 +95,7 @@ class OptionsConfig
 		return [];
 	}
 	
-	public static function setURL(IRequestSettings $data): array 
+	public static function setURL(IRequestParams $data): array 
 	{
 		return [CURLOPT_URL => $data->getURL()];
 	}

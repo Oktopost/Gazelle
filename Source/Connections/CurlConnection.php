@@ -4,10 +4,11 @@ namespace Gazelle\Connections;
 
 use Gazelle\IConnection;
 use Gazelle\ResponseData;
-use Gazelle\ErrorHandler;
-use Gazelle\IRequestSettings;
 use Gazelle\IResponseData;
 use Gazelle\IRequestConfig;
+use Gazelle\IRequestParams;
+
+use Gazelle\Utils\ErrorHandler;
 use Gazelle\Utils\HeadersParser;
 use Gazelle\Utils\IWithCurlOptions;
 
@@ -57,7 +58,7 @@ class CurlConnection implements IConnection
 	}
 	
 	
-	private function send($conn, IRequestSettings $requestData, IRequestConfig $config): IResponseData
+	private function send($conn, IRequestParams $requestData, IRequestConfig $config): IResponseData
 	{
 		$response = new ResponseData($requestData, $config);
 		
@@ -67,13 +68,16 @@ class CurlConnection implements IConnection
 		$response = $this->executeCurl($conn, $response);
 		$response = $this->parseResponse($conn, $response);
 		
-		ErrorHandler::handle($response);
+		if ($config->getParseResponseForErrors())
+		{
+			ErrorHandler::handle($response);
+		}
 		
 		return $response;
 	}
 	
 	
-	public function request(IRequestSettings $requestData, IRequestConfig $config): IResponseData
+	public function request(IRequestParams $requestData, IRequestConfig $config): IResponseData
 	{
 		$conn = curl_init();
 		

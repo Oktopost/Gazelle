@@ -2,7 +2,7 @@
 namespace Gazelle;
 
 
-interface IRequest
+interface IRequest extends IRequestParams
 {
 	public function get(): IResponseData;
 	public function put(): IResponseData;

@@ -4,5 +4,5 @@ namespace Gazelle;
 
 interface IConnection
 {
-	public function request(IRequestSettings $requestData, IRequestConfig $config): IResponseData;
+	public function request(IRequestParams $requestData, IRequestConfig $config): IResponseData;
 }
