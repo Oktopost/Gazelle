@@ -9,3 +9,6 @@
 
 # Dependencies
 /vendor/
+
+# Other
+test.php

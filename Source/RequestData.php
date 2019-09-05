@@ -116,6 +116,16 @@ class RequestData implements IRequestData
 	}
 	
 	/**
+	 * @param int $port
+	 * @return IRequestData
+	 */
+	public function setPort(int $port): IRequestData
+	{
+		$this->url->Port = $port;
+		return $this;
+	}
+	
+	/**
 	 * @param string $scheme
 	 * @return IRequestData|static
 	 */

@@ -40,6 +40,7 @@ interface IRequestData extends ICurlOptions
 	 */
 	public function setURL($url): IRequestData;
 	
+	public function setPort(int $port): IRequestData;
 	public function setScheme(string $scheme): IRequestData;
 	public function setDomain(string $domain): IRequestData;
 	public function addPath(string $path, bool $clean = true): IRequestData;
