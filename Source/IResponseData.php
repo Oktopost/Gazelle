@@ -4,7 +4,7 @@ namespace Gazelle;
 
 interface IResponseData
 {
-	public function requestData(): IRequestData;
+	public function requestData(): IRequestSettings;
 	public function requestConfig(): IRequestConfig;
 	
 	public function getCode(): int;

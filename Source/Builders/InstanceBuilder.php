@@ -2,9 +2,9 @@
 namespace Gazelle\Builders;
 
 
-use Gazelle\Exceptions\FatalGazelleException;
 use Gazelle\IConnection;
 use Gazelle\IConnectionBuilder;
+use Gazelle\Exceptions\FatalGazelleException;
 
 
 class InstanceBuilder implements IConnectionBuilder

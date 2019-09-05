@@ -2,14 +2,15 @@
 namespace Gazelle;
 
 
-use Gazelle\Exceptions\FatalGazelleException;
-use Gazelle\Utils\OptionsConfig;
 use Structura\URL;
 use Structura\Arrays;
 use Structura\Strings;
 
+use Gazelle\Utils\OptionsConfig;
+use Gazelle\Exceptions\FatalGazelleException;
 
-class RequestData implements IRequestData
+
+class RequestSettings implements IRequestSettings
 {
 	private $body		= null;
 	private $method 	= HTTPMethod::GET;
@@ -99,9 +100,9 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param string|URL $url
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setURL($url): IRequestData
+	public function setURL($url): IRequestSettings
 	{
 		if (is_string($url))
 		{
@@ -117,9 +118,9 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param int $port
-	 * @return IRequestData
+	 * @return IRequestSettings
 	 */
-	public function setPort(int $port): IRequestData
+	public function setPort(int $port): IRequestSettings
 	{
 		$this->url->Port = $port;
 		return $this;
@@ -127,9 +128,9 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param string $scheme
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setScheme(string $scheme): IRequestData
+	public function setScheme(string $scheme): IRequestSettings
 	{
 		$this->url->Scheme = $scheme;
 		return $this;
@@ -137,9 +138,9 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param string $domain
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setDomain(string $domain): IRequestData
+	public function setDomain(string $domain): IRequestSettings
 	{
 		$this->url->Host = $domain;
 		return $this;
@@ -148,9 +149,9 @@ class RequestData implements IRequestData
 	/**
 	 * @param string $path
 	 * @param bool $clean
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function addPath(string $path, bool $clean = true): IRequestData
+	public function addPath(string $path, bool $clean = true): IRequestSettings
 	{
 		$current = $this->url->Path;
 		
@@ -181,9 +182,9 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param string $path
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setPath(string $path): IRequestData
+	public function setPath(string $path): IRequestSettings
 	{
 		$this->url->Path = $path;
 		return $this;
@@ -192,9 +193,9 @@ class RequestData implements IRequestData
 	/**
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setQueryParam(string $name, $value): IRequestData
+	public function setQueryParam(string $name, $value): IRequestSettings
 	{
 		$this->url->setQueryParams([$name => $value]);
 		return $this;
@@ -202,9 +203,9 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param string[]|string[][] $params
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setQueryParams(array $params): IRequestData
+	public function setQueryParams(array $params): IRequestSettings
 	{
 		$this->url->setQueryParams($params);
 		return $this;
@@ -212,9 +213,9 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param string $method
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setMethod(string $method): IRequestData
+	public function setMethod(string $method): IRequestSettings
 	{
 		$this->method = $method;
 		return $this;
@@ -223,9 +224,9 @@ class RequestData implements IRequestData
 	/**
 	 * @param string $header
 	 * @param string $value
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setHeader(string $header, string $value): IRequestData
+	public function setHeader(string $header, string $value): IRequestSettings
 	{
 		$this->headers[$header] = $value;
 		return $this;
@@ -234,9 +235,9 @@ class RequestData implements IRequestData
 	/**
 	 * @param array $headers
 	 * @param bool $mergeSingleValue
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setHeaders(array $headers, bool $mergeSingleValue = false): IRequestData
+	public function setHeaders(array $headers, bool $mergeSingleValue = false): IRequestSettings
 	{
 		if (!$mergeSingleValue)
 		{
@@ -260,9 +261,9 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param null|string $body
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setBody(?string $body): IRequestData
+	public function setBody(?string $body): IRequestSettings
 	{
 		if (is_null($body))
 		{
@@ -282,9 +283,9 @@ class RequestData implements IRequestData
 	
 	/**
 	 * @param array|\stdClass $body
-	 * @return IRequestData|static
+	 * @return IRequestSettings|static
 	 */
-	public function setJsonBody($body): IRequestData
+	public function setJsonBody($body): IRequestSettings
 	{
 		$this->body = jsonencode($body);
 		

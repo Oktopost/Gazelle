@@ -2,10 +2,10 @@
 namespace Gazelle;
 
 
-use Gazelle\Exceptions\Request\CurlException;
 use Traitor\TStaticClass;
 use Gazelle\Exceptions\ServerException;
 use Gazelle\Exceptions\ClientException;
+use Gazelle\Exceptions\Request\CurlException;
 
 
 class ErrorHandler
@@ -15,10 +15,10 @@ class ErrorHandler
 	
 	/**
 	 * @param resource $resource
-	 * @param IRequestData $data
+	 * @param IRequestSettings $data
 	 * @param IRequestConfig $config
 	 */
-	public static function handleCurlException($resource, IRequestData $data, IRequestConfig $config): void
+	public static function handleCurlException($resource, IRequestSettings $data, IRequestConfig $config): void
 	{
 		throw new CurlException($resource, $data, $config);
 	}

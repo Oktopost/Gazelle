@@ -2,7 +2,7 @@
 namespace Gazelle\Utils;
 
 
-interface ICurlOptions
+interface IWithCurlOptions
 {
 	public function toCurlOptions(): array;
 }

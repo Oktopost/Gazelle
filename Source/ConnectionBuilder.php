@@ -2,10 +2,11 @@
 namespace Gazelle;
 
 
-use Gazelle\Decorators\CallbackDecorator;
 use Structura\Arrays;
+
 use Gazelle\Builders\CallbackBuilder;
 use Gazelle\Builders\InstanceBuilder;
+use Gazelle\Decorators\CallbackDecorator;
 use Gazelle\Exceptions\FatalGazelleException;
 
 

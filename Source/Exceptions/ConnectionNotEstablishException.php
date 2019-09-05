@@ -2,26 +2,26 @@
 namespace Gazelle\Exceptions;
 
 
-use Gazelle\IRequestData;
+use Gazelle\IRequestSettings;
 use Gazelle\IRequestConfig;
 
 
 class ConnectionNotEstablishException extends GazelleException
 {
-	/** @var IRequestData */
+	/** @var IRequestSettings */
 	private $request;
 	
 	/** @var IRequestConfig */
 	private $config;
 	
 	
-	public function __construct(IRequestData $request, IRequestConfig $config, string $message)
+	public function __construct(IRequestSettings $request, IRequestConfig $config, string $message)
 	{
 		parent::__construct($message);
 	}
 	
 	
-	public function requestData(): IRequestData
+	public function requestData(): IRequestSettings
 	{
 		return $this->request;
 	}

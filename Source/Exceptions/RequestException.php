@@ -2,7 +2,7 @@
 namespace Gazelle\Exceptions;
 
 
-use Gazelle\IRequestData;
+use Gazelle\IRequestSettings;
 use Gazelle\IRequestConfig;
 
 
@@ -11,11 +11,11 @@ class RequestException extends GazelleException
 	/** @var IRequestConfig */
 	private $config;
 	
-	/** @var IRequestData */
+	/** @var IRequestSettings */
 	private $request;
 	
 	
-	public function __construct(IRequestData $requestData, IRequestConfig $config, $message = '', $code = 0)
+	public function __construct(IRequestSettings $requestData, IRequestConfig $config, $message = '', $code = 0)
 	{
 		parent::__construct($message, $code);
 		
@@ -23,7 +23,7 @@ class RequestException extends GazelleException
 		$this->request = $requestData;
 	}
 	
-	public function request(): IRequestData
+	public function request(): IRequestSettings
 	{
 		return $this->request;
 	}

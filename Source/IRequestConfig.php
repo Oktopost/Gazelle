@@ -2,10 +2,10 @@
 namespace Gazelle;
 
 
-use Gazelle\Utils\ICurlOptions;
+use Gazelle\Utils\IWithCurlOptions;
 
 
-interface IRequestConfig extends ICurlOptions
+interface IRequestConfig extends IWithCurlOptions
 {
 	public function getConnectionTimeout(): float;
 	public function getExecutionTimeout(): float;

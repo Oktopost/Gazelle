@@ -2,11 +2,13 @@
 namespace Gazelle\Utils;
 
 
-use Gazelle\HTTPMethod;
-use Gazelle\IRequestData;
-use Gazelle\IRequestConfig;
 use Traitor\TStaticClass;
+
 use Structura\Arrays;
+
+use Gazelle\HTTPMethod;
+use Gazelle\IRequestConfig;
+use Gazelle\IRequestSettings;
 
 
 class OptionsConfig
@@ -52,7 +54,7 @@ class OptionsConfig
 		];
 	}
 	
-	public static function setHeaders(IRequestData $data): array 
+	public static function setHeaders(IRequestSettings $data): array 
 	{
 		$headers = $data->getHeaders();
 		$result = [];
@@ -74,14 +76,14 @@ class OptionsConfig
 		return $result ? [CURLOPT_HTTPHEADER => $headers] : [];
 	}
 	
-	public static function setBody(IRequestData $data): array 
+	public static function setBody(IRequestSettings $data): array 
 	{
 		$body = $data->getBody();
 		
 		return $body ? [CURLOPT_POSTFIELDS => $body] : [];
 	}
 	
-	public static function setMethod(IRequestData $data): array 
+	public static function setMethod(IRequestSettings $data): array 
 	{
 		$method = $data->getMethod();
 		
@@ -93,7 +95,7 @@ class OptionsConfig
 		return [];
 	}
 	
-	public static function setURL(IRequestData $data): array 
+	public static function setURL(IRequestSettings $data): array 
 	{
 		return [CURLOPT_URL => $data->getURL()];
 	}

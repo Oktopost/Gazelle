@@ -2,7 +2,7 @@
 namespace Gazelle\Exceptions;
 
 
-use Gazelle\IRequestData;
+use Gazelle\IRequestSettings;
 use Gazelle\IResponseData;
 use Gazelle\IRequestConfig;
 
@@ -24,7 +24,7 @@ abstract class ResponseException extends GazelleException
 		return $this->response;
 	}
 	
-	public function request(): IRequestData
+	public function request(): IRequestSettings
 	{
 		return $this->response->requestData();
 	}

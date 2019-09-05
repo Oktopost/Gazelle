@@ -5,7 +5,7 @@ namespace Gazelle;
 use Gazelle\Exceptions\Response\JSONExpectedException;
 
 
-class Request extends RequestData implements IRequest
+class Request extends RequestSettings implements IRequest
 {
 	/** @var IRequestConfig */
 	private $config;

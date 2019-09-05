@@ -4,6 +4,7 @@ namespace Gazelle;
 
 use Gazelle\Utils\OptionsConfig;
 
+
 class RequestConfig implements IRequestConfig
 {
 	private $connectionTimeout	= 10.0;
