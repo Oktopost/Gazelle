@@ -13,6 +13,19 @@ class RequestConfig implements IRequestConfig
 	private $maxRedirects			= 3;
 	private $curlOptions			= [CURLOPT_RETURNTRANSFER => 1];
 	
+	private $curlInfoOptions = [
+		CURLINFO_REDIRECT_COUNT,
+		CURLINFO_LOCAL_IP,
+		CURLINFO_LOCAL_PORT,
+		CURLINFO_PRIMARY_IP,
+		CURLINFO_PRIMARY_PORT,
+		CURLINFO_NAMELOOKUP_TIME,
+		CURLINFO_CONNECT_TIME,
+		CURLINFO_TOTAL_TIME,
+		CURLINFO_REDIRECT_TIME,
+		CURLINFO_EFFECTIVE_URL
+	];
+	
 	
 	public function getConnectionTimeout(): float
 	{
@@ -54,6 +67,8 @@ class RequestConfig implements IRequestConfig
 		{
 			$this->connectionTimeout = $connectionSec;
 		}
+		
+		$this->connectionTimeout = min($this->connectionTimeout, $this->executionTimeout);
 		
 		return $this;
 	}
@@ -98,5 +113,23 @@ class RequestConfig implements IRequestConfig
 			[ 
 				CURLOPT_HEADER	=> 1
 			];
+	}
+	
+	public function getCurlInfoOptions(): array
+	{
+		return $this->curlInfoOptions;
+	}
+	
+	public function clearCurlInfoOptions(): void
+	{
+		$this->curlInfoOptions = [];
+	}
+	
+	/**
+	 * @param int|int[] $flag
+	 */
+	public function setCurlInfoOptions($flag): void
+	{
+		$this->curlInfoOptions = array_unique(array_merge($this->curlInfoOptions, $flag), SORT_NUMERIC);
 	}
 }

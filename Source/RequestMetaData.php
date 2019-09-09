@@ -7,19 +7,25 @@ class RequestMetaData implements IRequestMetaData
 	private $endTime;
 	private $startTime;
 	
-	private $redirects	= null;
+	private $all = [];
 	
 	
 	public function __construct(float $startTime, float $endTime)
 	{
 		$this->startTime = $startTime;
 		$this->endTime = $endTime;
+		$this->all[CURLINFO_TOTAL_TIME] = $endTime - $startTime;
 	}
 	
 	public function setRedirects(int $redirects): RequestMetaData
 	{
-		$this->redirects = $redirects;
+		$this->all[CURLINFO_REDIRECT_COUNT] = $redirects;
 		return $this;
+	}
+	
+	public function setInfo(int $flag, $value): void
+	{
+		$this->all[$flag] = $value;
 	}
 	
 	
@@ -40,6 +46,65 @@ class RequestMetaData implements IRequestMetaData
 	
 	public function getRedirects(): ?int
 	{
-		return $this->redirects;
+		return $this->all[CURLINFO_REDIRECT_COUNT] ?? null;
+	}
+	
+	public function getLocalIP(): ?int
+	{
+		return $this->all[CURLINFO_LOCAL_IP] ?? null;
+	}
+	
+	public function getLocalPort(): ?int
+	{
+		return $this->all[CURLINFO_LOCAL_PORT] ?? null;
+	}
+	
+	public function getRemoteIP(): ?int
+	{
+		return $this->all[CURLINFO_PRIMARY_IP] ?? null;
+	}
+	
+	public function getRemotePort(): ?int
+	{
+		return $this->all[CURLINFO_PRIMARY_PORT] ?? null;
+	}
+	
+	public function getNameLookupTime(): ?int
+	{
+		return $this->all[CURLINFO_NAMELOOKUP_TIME] ?? null;
+	}
+	
+	public function getConnectionTime(): ?int
+	{
+		return $this->all[CURLINFO_CONNECT_TIME] ?? null;
+	}
+	
+	public function getTotalTime(): ?int
+	{
+		return $this->all[CURLINFO_TOTAL_TIME] ?? null;
+	}
+	
+	public function getRedirectsTime(): ?int
+	{
+		return $this->all[CURLINFO_REDIRECT_TIME] ?? null;
+	}
+	
+	public function getLastURL(): ?int
+	{
+		return $this->all[CURLINFO_EFFECTIVE_URL] ?? null;
+	}
+	
+	/**
+	 * @param int $flag
+	 * @return mixed|null
+	 */
+	public function getInfo(int $flag)
+	{
+		return $this->all[$flag] ?? null;
+	}
+	
+	public function getAllInfo(): array
+	{
+		return $this->all;
 	}
 }

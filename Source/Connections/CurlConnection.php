@@ -40,7 +40,16 @@ class CurlConnection implements IConnection
 	
 	private function parseResponseInfo($conn, IRequestConfig $config, RequestMetaData $data): void
 	{
+		$data->setRedirects(curl_getinfo($conn, CURLINFO_REDIRECT_COUNT) ?? 0);
 		
+		$flags = array_flip($config->getCurlInfoOptions());
+		unset($flags[CURLINFO_REDIRECT_COUNT]);
+		
+		foreach ($flags as $flag => $val)
+		{
+			$value = curl_getinfo($conn, $flag);
+			$data->setInfo($flag, $value);
+		}
 	}
 	
 	private function executeCurl($conn, IRequestParams $requestData): ResponseData

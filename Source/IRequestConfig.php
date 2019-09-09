@@ -22,4 +22,12 @@ interface IRequestConfig extends IWithCurlOptions
 	
 	public function getParseResponseForErrors(): bool;
 	public function setParseResponseForErrors(bool $throw): IRequestConfig;
+	
+	public function getCurlInfoOptions(): array;
+	public function clearCurlInfoOptions(): void;
+	
+	/**
+	 * @param int|int[] $flag
+	 */
+	public function setCurlInfoOptions($flag): void;
 }

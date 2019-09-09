@@ -12,9 +12,9 @@ class RequestException extends GazelleException
 	private $request;
 	
 	
-	public function __construct(IRequestParams $requestData, $message = '', $code = 0)
+	public function __construct(IRequestParams $requestData, float $runtime, $code = 0)
 	{
-		parent::__construct($message, $code);
+		parent::__construct("Connection timeout out in $runtime seconds", $code);
 		
 		$this->request = clone $requestData;
 	}

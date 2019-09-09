@@ -2,6 +2,7 @@
 namespace Gazelle\Decorators;
 
 
+use Gazelle\HTTPMethod;
 use Gazelle\IResponseData;
 use Gazelle\IRequestConfig;
 use Gazelle\IRequestParams;
@@ -61,8 +62,13 @@ class RetryDecorator extends AbstractConnectionDecorator
 	}
 	
 	
-	public function request(IRequestParams $requestData, IRequestConfig $config): IResponseData
+	public function request(IRequestParams $requestData): IResponseData
 	{
+		if ($requestData->getMethod() != HTTPMethod::GET)
+		{
+			return $this->invokeChild($requestData);
+		}
+		
 		if ($this->shouldRetry($requestData, $config))
 		{
 			return $this->executeWithRetry($requestData, $config);
