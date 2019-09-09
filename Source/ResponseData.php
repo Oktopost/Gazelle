@@ -16,14 +16,14 @@ class ResponseData implements IResponseData
 	/** @var IRequestParams */
 	private $originalRequest;
 	
-	/** @var IRequestConfig */
-	private $requestConfig;
+	/** @var IRequestMetaData */
+	private $metaData; 
 	
 	
-	public function __construct(IRequestParams $requestData, IRequestConfig $config)
+	public function __construct(IRequestParams $requestData, IRequestMetaData $metaData)
 	{
-		$this->originalRequest = $requestData;
-		$this->requestConfig = $config;
+		$this->originalRequest = clone $requestData;
+		$this->metaData = $metaData;
 	}
 	
 	
@@ -52,14 +52,19 @@ class ResponseData implements IResponseData
 	}
 	
 	
-	public function requestData(): IRequestParams
+	public function getRequestParams(): IRequestParams
 	{
 		return $this->originalRequest;
 	}
 	
 	public function requestConfig(): IRequestConfig
 	{
-		return $this->requestConfig;
+		return $this->originalRequest->getConfig();
+	}
+	
+	public function requestMetaData(): IRequestMetaData
+	{
+		return $this->metaData;
 	}
 	
 	

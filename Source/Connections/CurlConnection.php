@@ -7,6 +7,7 @@ use Gazelle\ResponseData;
 use Gazelle\IResponseData;
 use Gazelle\IRequestConfig;
 use Gazelle\IRequestParams;
+use Gazelle\RequestMetaData;
 
 use Gazelle\Utils\ErrorHandler;
 use Gazelle\Utils\HeadersParser;
@@ -17,7 +18,7 @@ class CurlConnection implements IConnection
 {
 	private function setOptions($conn, IWithCurlOptions $from): void
 	{
-		$options = $from->toCurlOptions();
+		$options = $from->getCurlOptions();
 		
 		if ($options)
 		{
@@ -37,18 +38,30 @@ class CurlConnection implements IConnection
 		$responseData->setHeaders($headers);
 	}
 	
-	private function executeCurl($conn, ResponseData $responseData): ResponseData
+	private function parseResponseInfo($conn, IRequestConfig $config, RequestMetaData $data): void
 	{
+		
+	}
+	
+	private function executeCurl($conn, IRequestParams $requestData): ResponseData
+	{
+		$startTime = microtime(true);
 		$body = curl_exec($conn);
+		$endTime = microtime(true);
+		
+		$metaData = new RequestMetaData($startTime, $endTime);
+		$response = new ResponseData($requestData, $metaData);
 		
 		if ($body === false)
 		{
-			ErrorHandler::handleCurlException($conn, $responseData->requestData(), $responseData->requestConfig());
+			ErrorHandler::handleCurlException($conn, $response);
 		}
 		
-		$this->parseCurlOutput($conn, $body, $responseData);
+		$this->parseCurlOutput($conn, $body, $response);
+		$this->parseResponseInfo($conn, $requestData->getConfig(), $metaData);
 		
-		return $responseData;
+		
+		return $response;
 	}
 	
 	private function parseResponse($conn, ResponseData $responseData): ResponseData
@@ -58,17 +71,14 @@ class CurlConnection implements IConnection
 	}
 	
 	
-	private function send($conn, IRequestParams $requestData, IRequestConfig $config): IResponseData
+	private function send($conn, IRequestParams $requestData): IResponseData
 	{
-		$response = new ResponseData($requestData, $config);
-		
-		$this->setOptions($conn, $config);
 		$this->setOptions($conn, $requestData);
 		
-		$response = $this->executeCurl($conn, $response);
+		$response = $this->executeCurl($conn, $requestData);
 		$response = $this->parseResponse($conn, $response);
 		
-		if ($config->getParseResponseForErrors())
+		if ($requestData->getConfig()->getParseResponseForErrors())
 		{
 			ErrorHandler::handle($response);
 		}
@@ -77,13 +87,13 @@ class CurlConnection implements IConnection
 	}
 	
 	
-	public function request(IRequestParams $requestData, IRequestConfig $config): IResponseData
+	public function request(IRequestParams $requestData): IResponseData
 	{
 		$conn = curl_init();
 		
 		try
 		{
-			return $this->send($conn, $requestData, $config);
+			return $this->send($conn, $requestData);
 		}
 		finally
 		{

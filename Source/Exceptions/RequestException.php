@@ -8,19 +8,15 @@ use Gazelle\IRequestConfig;
 
 class RequestException extends GazelleException 
 {
-	/** @var IRequestConfig */
-	private $config;
-	
 	/** @var IRequestParams */
 	private $request;
 	
 	
-	public function __construct(IRequestParams $requestData, IRequestConfig $config, $message = '', $code = 0)
+	public function __construct(IRequestParams $requestData, $message = '', $code = 0)
 	{
 		parent::__construct($message, $code);
 		
-		$this->config = $config;
-		$this->request = $requestData;
+		$this->request = clone $requestData;
 	}
 	
 	public function request(): IRequestParams
@@ -30,6 +26,6 @@ class RequestException extends GazelleException
 	
 	public function requestConfig(): IRequestConfig
 	{
-		return $this->config;
+		return $this->request->getConfig();
 	}
 }

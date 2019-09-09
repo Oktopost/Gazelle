@@ -10,7 +10,7 @@ interface IRequestConfig extends IWithCurlOptions
 	public function getConnectionTimeout(): float;
 	public function getExecutionTimeout(): float;
 	public function getMaxRedirects(): int;
-	public function getCurlOptions(): array;
+	public function getExtraCurlOptions(): array;
 	public function hasCurlOptions(): bool;
 	
 	public function setConnectionTimeout(float $sec): IRequestConfig;

@@ -69,4 +69,7 @@ interface IRequestParams extends IWithCurlOptions
 	 * @return IRequestParams
 	 */
 	public function setJsonBody($body): IRequestParams;
+	
+	
+	public function getConfig(): IRequestConfig;
 }

@@ -26,7 +26,7 @@ abstract class ResponseException extends GazelleException
 	
 	public function request(): IRequestParams
 	{
-		return $this->response->requestData();
+		return $this->response->getRequestParams();
 	}
 	
 	public function requestConfig(): IRequestConfig

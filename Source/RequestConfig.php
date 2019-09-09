@@ -7,7 +7,6 @@ use Gazelle\Utils\OptionsConfig;
 
 class RequestConfig implements IRequestConfig
 {
-	
 	private $throwOnFailedResponse	= true;
 	private $connectionTimeout		= 10.0;
 	private $executionTimeout		= 10.0;
@@ -30,7 +29,7 @@ class RequestConfig implements IRequestConfig
 		return $this->maxRedirects;
 	}
 	
-	public function getCurlOptions(): array
+	public function getExtraCurlOptions(): array
 	{
 		return $this->curlOptions;
 	}
@@ -90,7 +89,7 @@ class RequestConfig implements IRequestConfig
 	}
 	
 	
-	public function toCurlOptions(): array
+	public function getCurlOptions(): array
 	{
 		return
 			$this->curlOptions +

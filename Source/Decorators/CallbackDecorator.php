@@ -20,10 +20,10 @@ class CallbackDecorator extends AbstractConnectionDecorator
 	}
 	
 	
-	public function request(IRequestParams $requestData, IRequestConfig $config): IResponseData
+	public function request(IRequestParams $requestData): IResponseData
 	{
 		$callback = $this->callback;
-		$result = $callback($requestData, $config);
+		$result = $callback($requestData);
 		
 		if (!($result instanceof IResponseData))
 		{

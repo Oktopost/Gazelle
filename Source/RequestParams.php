@@ -19,10 +19,19 @@ class RequestParams implements IRequestParams
 	/** @var URL */
 	private $url;
 	
+	/** @var IRequestConfig */
+	private $config;
 	
-	public function __construct()
+	
+	public function __construct(IRequestConfig $config)
 	{
 		$this->url = new URL();
+		$this->config = $config;
+	}
+	
+	public function __clone()
+	{
+		$this->config = clone $this->config;
 	}
 	
 	
@@ -299,9 +308,16 @@ class RequestParams implements IRequestParams
 	}
 	
 	
-	public function toCurlOptions(): array
+	public function getConfig(): IRequestConfig
+	{
+		return $this->config;
+	}
+	
+	
+	public function getCurlOptions(): array
 	{
 		return 
+			$this->config->getCurlOptions() + 
 			OptionsConfig::setURL($this) + 
 			OptionsConfig::setBody($this) +  
 			OptionsConfig::setMethod($this) +

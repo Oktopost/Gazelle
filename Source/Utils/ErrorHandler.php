@@ -5,8 +5,6 @@ namespace Gazelle\Utils;
 use Traitor\TStaticClass;
 
 use Gazelle\IResponseData;
-use Gazelle\IRequestConfig;
-use Gazelle\IRequestParams;
 use Gazelle\Exceptions\Response\ServerException;
 use Gazelle\Exceptions\Response\ClientException;
 use Gazelle\Exceptions\Request\UnhandledCurlException;
@@ -19,12 +17,11 @@ class ErrorHandler
 	
 	/**
 	 * @param resource $resource
-	 * @param IRequestParams $data
-	 * @param IRequestConfig $config
+	 * @param IResponseData $data
 	 */
-	public static function handleCurlException($resource, IRequestParams $data, IRequestConfig $config): void
+	public static function handleCurlException($resource, IResponseData $data): void
 	{
-		throw new UnhandledCurlException($resource, $data, $config);
+		throw new UnhandledCurlException($resource, $data->getRequestParams());
 	}
 	
 	

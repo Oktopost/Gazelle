@@ -2,102 +2,162 @@
 namespace Gazelle;
 
 
+use Gazelle\Exceptions\GazelleException;
+use Gazelle\Exceptions\ResponseException;
 use Gazelle\Exceptions\Response\Unexpected\InvalidJSONResponseException;
-use Gazelle\Exceptions\Response\UnexpectedResponseException;
 
 
 class Request extends RequestParams implements IRequest
 {
-	/** @var IRequestConfig */
-	private $config;
-	
 	/** @var IConnectionBuilder */
 	private $builder;
+	
+	/** @var GazelleException */
+	private $lastException = null;
+	
+	
+	private function sendWithMethod(string $method): IResponseData
+	{
+		$this->setMethod($method);
+		return $this->send();
+	}
+	
+	private function trySendWithMethod(string $method): ?IResponseData
+	{
+		$this->setMethod($method);
+		return $this->trySend();
+	}
 	
 	
 	public function __construct(IRequestConfig $config, IConnectionBuilder $builder)
 	{
-		parent::__construct();
-		$this->config = $config;
+		parent::__construct($config);
 		$this->builder = $builder;
 	}
 	
 	public function __clone()
 	{
-		$this->config = clone $this->config;
+		parent::__clone();
 		$this->builder = clone $this->builder;
 	}
 	
 	
 	public function send(): IResponseData
 	{
+		$this->lastException = null;
 		$connection = $this->builder->get();
-		return $connection->request($this, $this->config);
+		return $connection->request($this);
 	}
+	
+	public function trySend(): ?IResponseData
+	{
+		try
+		{
+			return $this->send();
+		}
+		catch (GazelleException $e)
+		{
+			$this->lastException = $e;
+			
+			if ($e instanceof ResponseException)
+			{
+				return $e->response();
+			}
+			
+			return null;
+		}
+	}
+	
 	
 	public function get(): IResponseData
 	{
-		$this->setMethod(HTTPMethod::GET);
-		return $this->send();
+		return $this->sendWithMethod(HTTPMethod::GET);
 	}
 	
 	public function put(): IResponseData
 	{
-		$this->setMethod(HTTPMethod::PUT);
-		return $this->send();
+		return $this->sendWithMethod(HTTPMethod::PUT);
 	}
 	
 	public function post(): IResponseData
 	{
-		$this->setMethod(HTTPMethod::POST);
-		return $this->send();
+		return $this->sendWithMethod(HTTPMethod::POST);
 	}
 	
 	public function head(): IResponseData
 	{
-		$this->setMethod(HTTPMethod::HEAD);
-		return $this->send();
+		return $this->sendWithMethod(HTTPMethod::HEAD);
 	}
 	
 	public function delete(): IResponseData
 	{
-		$this->setMethod(HTTPMethod::DELETE);
-		return $this->send();
+		return $this->sendWithMethod(HTTPMethod::DELETE);
 	}
 	
 	public function options(): IResponseData
 	{
-		$this->setMethod(HTTPMethod::OPTIONS);
-		return $this->send();
+		return $this->sendWithMethod(HTTPMethod::OPTIONS);
 	}
 	
 	public function patch(): IResponseData
 	{
-		$this->setMethod(HTTPMethod::PATCH);
-		return $this->send();
+		return $this->sendWithMethod(HTTPMethod::PATCH);
 	}
+	
+	
+	public function tryGet(): ?IResponseData
+	{
+		return $this->trySendWithMethod(HTTPMethod::GET);
+	}
+	
+	public function tryPut(): ?IResponseData
+	{
+		return $this->trySendWithMethod(HTTPMethod::PUT);
+	}
+	
+	public function tryPost(): ?IResponseData
+	{
+		return $this->trySendWithMethod(HTTPMethod::POST);
+	}
+	
+	public function tryHead(): ?IResponseData
+	{
+		return $this->trySendWithMethod(HTTPMethod::HEAD);
+	}
+	
+	public function tryDelete(): ?IResponseData
+	{
+		return $this->trySendWithMethod(HTTPMethod::DELETE);
+	}
+	
+	public function tryOptions(): ?IResponseData
+	{
+		return $this->trySendWithMethod(HTTPMethod::OPTIONS);
+	}
+	
+	public function tryPatch(): ?IResponseData
+	{
+		return $this->trySendWithMethod(HTTPMethod::PATCH);
+	}
+	
 	
 	public function queryCode(): int
 	{
-		$this->setMethod(HTTPMethod::GET);
 		return $this->send()->getCode();
 	}
 	
 	public function queryOK(): bool
 	{
-		$this->setMethod(HTTPMethod::GET);
 		return $this->send()->isSuccessful();
 	}
 	
 	public function queryHeaders(): array
 	{
-		$this->setMethod(HTTPMethod::GET);
 		return $this->send()->getHeaders();
 	}
 	
 	public function queryBody(): string
 	{
-		$this->setMethod(HTTPMethod::GET);
 		return $this->send()->getBody();
 	}
 	
@@ -115,28 +175,81 @@ class Request extends RequestParams implements IRequest
 	}
 	
 	
-	public function config(): IRequestConfig
+	public function tryQueryCode(): ?int
 	{
-		return $this->config;
+		$result = $this->tryGet();
+		return $result ? $result->getCode() : null;
+	}
+	
+	public function tryQueryOK(): bool
+	{
+		$result = $this->trySend();
+		return $result ? $result->isSuccessful() : false;
+	}
+	
+	public function tryQueryHeaders(bool $defaultAsEmptyArray = false): ?array
+	{
+		$default = $defaultAsEmptyArray ? [] : null;
+		$result = $this->trySend();
+		
+		return $result ? $result->getHeaders() : $default;
+	}
+	
+	public function tryQueryBody(bool $defaultAsEmptyString = false): ?string
+	{
+		$default = $defaultAsEmptyString ? '' : null;
+		$result = $this->trySend();
+		
+		return $result ? $result->getBody() : $default;
+	}
+	
+	public function tryQueryJSON(): ?array
+	{
+		$result = $this->trySend();
+		
+		if (!$result)
+			return null;
+		
+		$json = $result->getJSON();
+		
+		if (is_null($json))
+		{
+			$this->lastException = new InvalidJSONResponseException($result);
+			return null;
+		}
+		
+		return $json;
+	}
+	
+	
+	public function getLastException(): ?GazelleException
+	{
+		return $this->lastException;
+	}
+	
+	public function hasError(): bool
+	{
+		return !is_null($this->lastException);
 	}
 	
 	
 	public function setCurlOption(int $option, $value): Request
 	{
-		$this->config->setCurlOption($option, $value);
+		$this->getConfig()->setCurlOption($option, $value);
 		return $this;
 	}
 	
 	public function setCurlOptions(array $options): Request
 	{
-		$this->config->setCurlOptions($options);
+		$this->getConfig()->setCurlOptions($options);
 		return $this;
 	}
 	
-	
-	public function getAllCurlOptions(): array
+	public function throwLastException(): void
 	{
-		return $this->config->toCurlOptions() + 
-			$this->toCurlOptions();
+		if ($this->lastException)
+		{
+			throw $this->lastException;
+		}
 	}
 }

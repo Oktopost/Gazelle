@@ -7,7 +7,6 @@ use Gazelle\IRequestConfig;
 use Gazelle\IRequestParams;
 use Gazelle\AbstractConnectionDecorator;
 use Gazelle\Exceptions\FatalGazelleException;
-use Gazelle\Exceptions\ConnectionNotEstablishException;
 
 
 class RetryDecorator extends AbstractConnectionDecorator
@@ -15,16 +14,15 @@ class RetryDecorator extends AbstractConnectionDecorator
 	private $max = 3;
 	
 	
-	private function executeSafe(IRequestParams $requestData, IRequestConfig $config): ?IResponseData
+	private function executeSafe(IRequestParams $requestData): ?IResponseData
 	{
-		$originalRequest	= clone $requestData;
-		$originalConfig		= clone $config;
+		$originalRequest = clone $requestData;
 		
 		for ($i = 0; $i < $this->max; $i++)
 		{
 			try
 			{
-				return $this->invokeChild($originalRequest, $originalConfig);
+				return $this->invokeChild($originalRequest);
 			}
 			catch (ConnectionNotEstablishException $te)
 			{
