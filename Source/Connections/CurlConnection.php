@@ -67,8 +67,7 @@ class CurlConnection implements IConnection
 		}
 		
 		$this->parseCurlOutput($conn, $body, $response);
-		$this->parseResponseInfo($conn, $requestData->getConfig(), $metaData);
-		
+		$this->parseResponseInfo($conn, $requestData, $metaData);
 		
 		return $response;
 	}
@@ -87,7 +86,7 @@ class CurlConnection implements IConnection
 		$response = $this->executeCurl($conn, $requestData);
 		$response = $this->parseResponse($conn, $response);
 		
-		if ($requestData->getConfig()->getParseResponseForErrors())
+		if ($requestData->getParseResponseForErrors())
 		{
 			ErrorHandler::handle($response);
 		}
