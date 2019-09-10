@@ -12,26 +12,136 @@ use Gazelle\Exceptions\FatalGazelleException;
 
 class RequestParams implements IRequestParams
 {
+	/** @var URL */
+	private $url;
+	
 	private $body		= null;
 	private $method 	= HTTPMethod::GET;
 	private $headers	= [];
 	
-	/** @var URL */
-	private $url;
+	private $throwOnFailedResponse	= true;
+	private $connectionTimeout		= 10.0;
+	private $executionTimeout		= 10.0;
+	private $maxRedirects			= 3;
 	
-	/** @var IRequestConfig */
-	private $config;
+	private $curlOptions = [
+		CURLOPT_RETURNTRANSFER	=> 1,
+		CURLOPT_HEADER			=> 1
+	];
+	
+	private $curlInfoOptions = [
+		CURLINFO_REDIRECT_COUNT,
+		CURLINFO_LOCAL_IP,
+		CURLINFO_LOCAL_PORT,
+		CURLINFO_PRIMARY_IP,
+		CURLINFO_PRIMARY_PORT,
+		CURLINFO_NAMELOOKUP_TIME,
+		CURLINFO_CONNECT_TIME,
+		CURLINFO_TOTAL_TIME,
+		CURLINFO_REDIRECT_TIME,
+		CURLINFO_EFFECTIVE_URL
+	];
 	
 	
-	public function __construct(IRequestConfig $config)
+	public function getConnectionTimeout(): float
 	{
-		$this->url = new URL();
-		$this->config = $config;
+		return $this->connectionTimeout;
 	}
 	
-	public function __clone()
+	public function getExecutionTimeout(): float
 	{
-		$this->config = clone $this->config;
+		return $this->executionTimeout;
+	}
+	
+	public function getMaxRedirects(): int
+	{
+		return $this->maxRedirects;
+	}
+	
+	public function getCurlOptions(): array
+	{
+		return $this->curlOptions;
+	}
+	
+	public function hasCurlOptions(): bool
+	{
+		return (bool)$this->curlOptions;
+	}
+	
+	
+	public function setConnectionTimeout(float $sec): IRequestParams
+	{
+		$this->connectionTimeout = $sec;
+		return $this;
+	}
+	
+	public function setExecutionTimeout(float $sec, ?float $connectionSec = null): IRequestParams
+	{
+		$this->executionTimeout = $sec;
+		
+		if ($connectionSec)
+		{
+			$this->connectionTimeout = $connectionSec;
+		}
+		
+		$this->connectionTimeout = min($this->connectionTimeout, $this->executionTimeout);
+		
+		return $this;
+	}
+	
+	public function setMaxRedirects(int $max): IRequestParams
+	{
+		$this->maxRedirects = $max;
+		return $this;
+	}
+	
+	public function setCurlOption(int $option, $value): IRequestParams
+	{
+		$this->curlOptions[$option] = $value;
+		return $this;
+	}
+	
+	public function setCurlOptions(array $options): IRequestParams
+	{
+		$this->curlOptions = array_merge($this->curlOptions, $options);
+		return $this;
+	}
+	
+	
+	public function setParseResponseForErrors(bool $throw): IRequestParams
+	{
+		$this->throwOnFailedResponse = $throw;
+		return $this;
+	}
+	
+	public function getParseResponseForErrors(): bool
+	{
+		return $this->throwOnFailedResponse;
+	}
+	
+	
+	public function getCurlInfoOptions(): array
+	{
+		return $this->curlInfoOptions;
+	}
+	
+	public function clearCurlInfoOptions(): void
+	{
+		$this->curlInfoOptions = [];
+	}
+	
+	/**
+	 * @param int|int[] $flag
+	 */
+	public function setCurlInfoOptions($flag): void
+	{
+		$this->curlInfoOptions = array_unique(array_merge($this->curlInfoOptions, $flag), SORT_NUMERIC);
+	}
+	
+	
+	public function __construct()
+	{
+		$this->url = new URL();
 	}
 	
 	
@@ -308,19 +418,8 @@ class RequestParams implements IRequestParams
 	}
 	
 	
-	public function getConfig(): IRequestConfig
+	public function getAllCurlOptions(): array
 	{
-		return $this->config;
-	}
-	
-	
-	public function getCurlOptions(): array
-	{
-		return 
-			$this->config->getCurlOptions() + 
-			OptionsConfig::setURL($this) + 
-			OptionsConfig::setBody($this) +  
-			OptionsConfig::setMethod($this) +
-			OptionsConfig::setHeaders($this);
+		return OptionsConfig::generate($this);
 	}
 }

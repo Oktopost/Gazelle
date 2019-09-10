@@ -18,7 +18,7 @@ class CurlConnection implements IConnection
 {
 	private function setOptions($conn, IWithCurlOptions $from): void
 	{
-		$options = $from->getCurlOptions();
+		$options = $from->getAllCurlOptions();
 		
 		if ($options)
 		{

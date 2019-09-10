@@ -7,9 +7,6 @@ use Gazelle\Connections\CurlConnection;
 
 class Gazelle
 {
-	/** @var IRequestConfig */
-	private $config;
-	
 	/** @var Request */
 	private $template;
 	
@@ -19,9 +16,8 @@ class Gazelle
 	
 	public function __construct()
 	{
-		$this->config = new RequestConfig();
 		$this->builder = new ConnectionBuilder();
-		$this->template = new Request($this->config, $this->builder);
+		$this->template = new Request($this->builder);
 		
 		$this->builder->setMainObject(CurlConnection::class);
 	}
@@ -39,11 +35,6 @@ class Gazelle
 		return $this;
 	}
 	
-	
-	public function config(): IRequestConfig
-	{
-		return $this->config;
-	}
 	
 	public function template(): IRequestParams
 	{

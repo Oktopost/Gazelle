@@ -57,11 +57,6 @@ class ResponseData implements IResponseData
 		return $this->originalRequest;
 	}
 	
-	public function requestConfig(): IRequestConfig
-	{
-		return $this->originalRequest->getConfig();
-	}
-	
 	public function requestMetaData(): IRequestMetaData
 	{
 		return $this->metaData;

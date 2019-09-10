@@ -4,11 +4,34 @@ namespace Gazelle;
 
 use Structura\URL;
 
-use Gazelle\Utils\IWithCurlOptions;
 
-
-interface IRequestParams extends IWithCurlOptions
+interface IRequestParams extends IRequestConfig
 {
+	public function getConnectionTimeout(): float;
+	public function getExecutionTimeout(): float;
+	public function getMaxRedirects(): int;
+	public function hasCurlOptions(): bool;
+	
+	public function setConnectionTimeout(float $sec): IRequestParams;
+	public function setExecutionTimeout(float $sec, ?float $connectionSec = null): IRequestParams;
+	public function setMaxRedirects(int $max): IRequestParams;
+	
+	public function getCurlOptions(): array;
+	public function setCurlOption(int $option, $value): IRequestParams;
+	public function setCurlOptions(array $options): IRequestParams;
+	
+	public function getParseResponseForErrors(): bool;
+	public function setParseResponseForErrors(bool $throw): IRequestParams;
+	
+	public function getCurlInfoOptions(): array;
+	public function clearCurlInfoOptions(): void;
+	
+	/**
+	 * @param int|int[] $flag
+	 */
+	public function setCurlInfoOptions($flag): void;
+	
+	
 	public function getMethod(): string;
 	public function getURL(): string;
 	public function getURLObject(): URL;
@@ -69,7 +92,4 @@ interface IRequestParams extends IWithCurlOptions
 	 * @return IRequestParams
 	 */
 	public function setJsonBody($body): IRequestParams;
-	
-	
-	public function getConfig(): IRequestConfig;
 }

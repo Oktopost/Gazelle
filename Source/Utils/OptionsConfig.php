@@ -7,7 +7,6 @@ use Traitor\TStaticClass;
 use Structura\Arrays;
 
 use Gazelle\HTTPMethod;
-use Gazelle\IRequestConfig;
 use Gazelle\IRequestParams;
 
 
@@ -16,7 +15,7 @@ class OptionsConfig
 	use TStaticClass;
 	
 	
-	public static function setRedirects(IRequestConfig $config): array
+	private static function setRedirects(IRequestParams $config): array
 	{
 		$maxRedirects = $config->getMaxRedirects();
 		
@@ -43,7 +42,7 @@ class OptionsConfig
 		}
 	}
 	
-	public static function setTimeouts(IRequestConfig $config): array 
+	private static function setTimeouts(IRequestParams $config): array 
 	{
 		$executeTimeout = $config->getExecutionTimeout();
 		$connectTimeout = $config->getConnectionTimeout();
@@ -54,7 +53,7 @@ class OptionsConfig
 		];
 	}
 	
-	public static function setHeaders(IRequestParams $data): array 
+	private static function setHeaders(IRequestParams $data): array 
 	{
 		$headers = $data->getHeaders();
 		$result = [];
@@ -76,14 +75,14 @@ class OptionsConfig
 		return $result ? [CURLOPT_HTTPHEADER => $headers] : [];
 	}
 	
-	public static function setBody(IRequestParams $data): array 
+	private static function setBody(IRequestParams $data): array 
 	{
 		$body = $data->getBody();
 		
 		return $body ? [CURLOPT_POSTFIELDS => $body] : [];
 	}
 	
-	public static function setMethod(IRequestParams $data): array 
+	private static function setMethod(IRequestParams $data): array 
 	{
 		$method = $data->getMethod();
 		
@@ -95,8 +94,21 @@ class OptionsConfig
 		return [];
 	}
 	
-	public static function setURL(IRequestParams $data): array 
+	private static function setURL(IRequestParams $data): array 
 	{
 		return [CURLOPT_URL => $data->getURL()];
+	}
+	
+	
+	public static function generate(IRequestParams $request): array
+	{
+		return 
+			$request->getCurlOptions() +
+			self::setRedirects($request) + 
+			self::setTimeouts($request) + 
+			self::setURL($request) + 
+			self::setBody($request) +  
+			self::setMethod($request) +
+			self::setHeaders($request);
 	}
 }

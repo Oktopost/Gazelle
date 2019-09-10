@@ -29,15 +29,14 @@ class Request extends RequestParams implements IRequest
 	}
 	
 	
-	public function __construct(IRequestConfig $config, IConnectionBuilder $builder)
+	public function __construct(IConnectionBuilder $builder)
 	{
-		parent::__construct($config);
+		parent::__construct();
 		$this->builder = $builder;
 	}
 	
 	public function __clone()
 	{
-		parent::__clone();
 		$this->builder = clone $this->builder;
 	}
 	
@@ -230,19 +229,6 @@ class Request extends RequestParams implements IRequest
 	public function hasError(): bool
 	{
 		return !is_null($this->lastException);
-	}
-	
-	
-	public function setCurlOption(int $option, $value): Request
-	{
-		$this->getConfig()->setCurlOption($option, $value);
-		return $this;
-	}
-	
-	public function setCurlOptions(array $options): Request
-	{
-		$this->getConfig()->setCurlOptions($options);
-		return $this;
 	}
 	
 	public function throwLastException(): void

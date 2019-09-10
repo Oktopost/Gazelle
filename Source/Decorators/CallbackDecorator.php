@@ -3,7 +3,6 @@ namespace Gazelle\Decorators;
 
 
 use Gazelle\IResponseData;
-use Gazelle\IRequestConfig;
 use Gazelle\IRequestParams;
 use Gazelle\AbstractConnectionDecorator;
 use Gazelle\Exceptions\FatalGazelleException;

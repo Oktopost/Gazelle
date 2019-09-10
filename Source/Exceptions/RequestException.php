@@ -3,7 +3,6 @@ namespace Gazelle\Exceptions;
 
 
 use Gazelle\IRequestParams;
-use Gazelle\IRequestConfig;
 
 
 class RequestException extends GazelleException 
@@ -12,9 +11,15 @@ class RequestException extends GazelleException
 	private $request;
 	
 	
+	private function getRuntimeAsString(float $runtime): string
+	{
+		return round($runtime, 4);
+	}
+	
+	
 	public function __construct(IRequestParams $requestData, float $runtime, $code = 0)
 	{
-		parent::__construct("Connection timeout out in $runtime seconds", $code);
+		parent::__construct("Connection timeout out after {$this->getRuntimeAsString($runtime)} seconds", $code);
 		
 		$this->request = clone $requestData;
 	}
@@ -22,10 +27,5 @@ class RequestException extends GazelleException
 	public function request(): IRequestParams
 	{
 		return $this->request;
-	}
-	
-	public function requestConfig(): IRequestConfig
-	{
-		return $this->request->getConfig();
 	}
 }
