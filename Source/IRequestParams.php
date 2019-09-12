@@ -22,6 +22,8 @@ interface IRequestParams extends IRequestConfig
 	public function setCurlInfoOptions($flag): void;
 	
 	
+	public function resetParams(): void;
+	
 	public function getMethod(): string;
 	public function getURL(): string;
 	public function getURLObject(): URL;

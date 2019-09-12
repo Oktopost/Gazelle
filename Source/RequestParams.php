@@ -15,9 +15,9 @@ class RequestParams implements IRequestParams
 	/** @var URL */
 	private $url;
 	
-	private $body		= null;
-	private $method 	= HTTPMethod::GET;
-	private $headers	= [];
+	private $body;
+	private $method;
+	private $headers;
 	
 	private $throwOnFailedResponse	= true;
 	private $connectionTimeout		= 10.0;
@@ -41,6 +41,21 @@ class RequestParams implements IRequestParams
 		CURLINFO_REDIRECT_TIME,
 		CURLINFO_EFFECTIVE_URL
 	];
+	
+	
+	public function __construct()
+	{
+		$this->resetParams();
+	}
+	
+	
+	public function resetParams(): void
+	{
+		$this->url		= new URL();
+		$this->body		= null;
+		$this->method 	= HTTPMethod::GET;
+		$this->headers	= [];
+	}
 	
 	
 	public function getConnectionTimeout(): float
@@ -155,12 +170,6 @@ class RequestParams implements IRequestParams
 	public function setCurlInfoOptions($flag): void
 	{
 		$this->curlInfoOptions = array_unique(array_merge($this->curlInfoOptions, $flag), SORT_NUMERIC);
-	}
-	
-	
-	public function __construct()
-	{
-		$this->url = new URL();
 	}
 	
 	
