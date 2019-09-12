@@ -15,6 +15,9 @@ class Request extends RequestParams implements IRequest
 	/** @var GazelleException */
 	private $lastException = null;
 	
+	/** @var IConnection */
+	private $connection = null;
+	
 	
 	private function sendWithMethod(string $method): IResponseData
 	{
@@ -38,14 +41,21 @@ class Request extends RequestParams implements IRequest
 	public function __clone()
 	{
 		$this->builder = clone $this->builder;
+		$this->connection = null;
+		$this->lastException = null;
 	}
 	
 	
 	public function send(): IResponseData
 	{
 		$this->lastException = null;
-		$connection = $this->builder->get();
-		return $connection->request($this);
+		
+		if (!$this->connection)
+		{
+			$this->connection = $this->builder->get();
+		}
+		
+		return $this->connection->request($this);
 	}
 	
 	public function trySend(): ?IResponseData
@@ -230,6 +240,15 @@ class Request extends RequestParams implements IRequest
 	{
 		return !is_null($this->lastException);
 	}
+	
+	public function close(): void
+	{
+		if ($this->connection)
+		{
+			$this->connection = null;
+		}
+	}
+	
 	
 	public function throwLastException(): void
 	{

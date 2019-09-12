@@ -14,4 +14,5 @@ interface IRequestConfig extends IWithCurlOptions
 	public function hasCurlOptions(): bool;
 	public function getParseResponseForErrors(): bool;
 	public function getCurlInfoOptions(): array;
+	public function getIsConnectionReused(): bool;
 }

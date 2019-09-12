@@ -39,4 +39,5 @@ interface IRequest extends IRequestParams
 	
 	public function getLastException(): ?GazelleException;
 	public function hasError(): bool;
+	public function close(): void;
 }

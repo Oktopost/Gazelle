@@ -58,6 +58,11 @@ class RequestParams implements IRequestParams
 		return $this->maxRedirects;
 	}
 	
+	public function getIsConnectionReused(): bool
+	{
+		return (bool)($this->curlOptions[CURLOPT_FORBID_REUSE] ?? false);
+	}
+	
 	public function getCurlOptions(): array
 	{
 		return $this->curlOptions;
@@ -66,6 +71,20 @@ class RequestParams implements IRequestParams
 	public function hasCurlOptions(): bool
 	{
 		return (bool)$this->curlOptions;
+	}
+	
+	public function setIsConnectionReused(bool $reuse): IRequestParams
+	{
+		if ($reuse)
+		{
+			unset($this->curlOptions[CURLOPT_FORBID_REUSE]);
+		}
+		else
+		{
+			$this->curlOptions[CURLOPT_FORBID_REUSE] = true;
+		}
+		
+		return $this;
 	}
 	
 	

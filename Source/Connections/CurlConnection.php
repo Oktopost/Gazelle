@@ -16,19 +16,22 @@ use Gazelle\Utils\IWithCurlOptions;
 
 class CurlConnection implements IConnection
 {
-	private function setOptions($conn, IWithCurlOptions $from): void
+	private $curl = null;
+	
+	
+	private function setOptions(IWithCurlOptions $from): void
 	{
 		$options = $from->getAllCurlOptions();
 		
 		if ($options)
 		{
-			curl_setopt_array($conn, $options);
+			curl_setopt_array($this->curl, $options);
 		}
 	}
 	
-	private function parseCurlOutput($conn, string $output, ResponseData $responseData): void
+	private function parseCurlOutput(string $output, ResponseData $responseData): void
 	{
-		$headerSize = curl_getinfo($conn, CURLINFO_HEADER_SIZE);
+		$headerSize = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
 		
 		$body = substr($output, $headerSize);
 		$headers = substr($output, 0, $headerSize);
@@ -38,24 +41,24 @@ class CurlConnection implements IConnection
 		$responseData->setHeaders($headers);
 	}
 	
-	private function parseResponseInfo($conn, IRequestConfig $config, RequestMetaData $data): void
+	private function parseResponseInfo(IRequestConfig $config, RequestMetaData $data): void
 	{
-		$data->setRedirects(curl_getinfo($conn, CURLINFO_REDIRECT_COUNT) ?? 0);
+		$data->setRedirects(curl_getinfo($this->curl, CURLINFO_REDIRECT_COUNT) ?? 0);
 		
 		$flags = array_flip($config->getCurlInfoOptions());
 		unset($flags[CURLINFO_REDIRECT_COUNT]);
 		
 		foreach ($flags as $flag => $val)
 		{
-			$value = curl_getinfo($conn, $flag);
+			$value = curl_getinfo($this->curl, $flag);
 			$data->setInfo($flag, $value);
 		}
 	}
 	
-	private function executeCurl($conn, IRequestParams $requestData): ResponseData
+	private function executeCurl(IRequestParams $requestData): ResponseData
 	{
 		$startTime = microtime(true);
-		$body = curl_exec($conn);
+		$body = curl_exec($this->curl);
 		$endTime = microtime(true);
 		
 		$metaData = new RequestMetaData($startTime, $endTime);
@@ -63,28 +66,28 @@ class CurlConnection implements IConnection
 		
 		if ($body === false)
 		{
-			ErrorHandler::handleCurlException($conn, $response);
+			ErrorHandler::handleCurlException($this->curl, $response);
 		}
 		
-		$this->parseCurlOutput($conn, $body, $response);
-		$this->parseResponseInfo($conn, $requestData, $metaData);
+		$this->parseCurlOutput($body, $response);
+		$this->parseResponseInfo($requestData, $metaData);
 		
 		return $response;
 	}
 	
-	private function parseResponse($conn, ResponseData $responseData): ResponseData
+	private function parseResponse(ResponseData $responseData): ResponseData
 	{
-		$responseData->setCode(curl_getinfo($conn, CURLINFO_RESPONSE_CODE));
+		$responseData->setCode(curl_getinfo($this->curl, CURLINFO_RESPONSE_CODE));
 		return $responseData;
 	}
 	
 	
-	private function send($conn, IRequestParams $requestData): IResponseData
+	private function send(IRequestParams $requestData): IResponseData
 	{
-		$this->setOptions($conn, $requestData);
+		$this->setOptions($requestData);
 		
-		$response = $this->executeCurl($conn, $requestData);
-		$response = $this->parseResponse($conn, $response);
+		$response = $this->executeCurl($requestData);
+		$response = $this->parseResponse($response);
 		
 		if ($requestData->getParseResponseForErrors())
 		{
@@ -95,17 +98,23 @@ class CurlConnection implements IConnection
 	}
 	
 	
+	public function __destruct()
+	{
+		if ($this->curl)
+		{
+			curl_close($this->curl);
+			unset($this->curl);
+		}
+	}
+	
+	
 	public function request(IRequestParams $requestData): IResponseData
 	{
-		$conn = curl_init();
+		if (!$this->curl)
+		{
+			$this->curl = curl_init();
+		}
 		
-		try
-		{
-			return $this->send($conn, $requestData);
-		}
-		finally
-		{
-			curl_close($conn);
-		}
+		return $this->send($requestData);
 	}
 }
