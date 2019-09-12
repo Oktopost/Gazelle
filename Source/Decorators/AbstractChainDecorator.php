@@ -1,11 +1,10 @@
 <?php
-
 namespace Gazelle\Decorators;
 
 
-use Gazelle\AbstractConnectionDecorator;
-use Gazelle\IRequestParams;
 use Gazelle\IResponseData;
+use Gazelle\IRequestParams;
+use Gazelle\AbstractConnectionDecorator;
 
 
 abstract class AbstractChainDecorator extends AbstractConnectionDecorator
