@@ -22,4 +22,7 @@ interface IResponseData
 	public function isComplete(): bool;
 	public function isRedirect(): bool;
 	public function isFailed(): bool;
+	
+	public function isServerError(): bool;
+	public function isClientError(): bool;
 }

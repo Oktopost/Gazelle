@@ -142,4 +142,14 @@ class ResponseData implements IResponseData
 	{
 		return  400 <= $this->code && $this->code < 600;
 	}
+	
+	public function isServerError(): bool
+	{
+		return  500 <= $this->code && $this->code < 600;
+	}
+	
+	public function isClientError(): bool
+	{
+		return  400 <= $this->code && $this->code < 500;
+	}
 }

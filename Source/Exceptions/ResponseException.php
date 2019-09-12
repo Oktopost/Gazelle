@@ -35,11 +35,11 @@ abstract class ResponseException extends GazelleException
 	
 	public function isServerError(): bool
 	{
-		return (int)($this->response->getCode() / 100) * 100 == 500;
+		return $this->response->isServerError();
 	}
 	
 	public function isClientError(): bool
 	{
-		return (int)($this->response->getCode() / 100) * 100 == 400;
+		return $this->response->isClientError();
 	}
 }
