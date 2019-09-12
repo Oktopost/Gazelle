@@ -18,7 +18,8 @@ abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 		
 		while ($requestNumber++ < $this->maxRetries)
 		{
-			$result = $this->executeOnce($requestData);
+			$request = clone $requestData;
+			$result = $this->executeOnce($request);
 			
 			if ($result)
 			{
