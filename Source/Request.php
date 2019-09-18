@@ -173,14 +173,15 @@ class Request extends RequestParams implements IRequest
 	public function queryJSON(): array
 	{
 		$this->setMethod(HTTPMethod::GET);
-		$result = $this->send()->getJSON();
+		$result = $this->send();
+		$data = $result->getJSON();
 		
-		if (!is_null($result))
+		if (is_null($data))
 		{
 			throw new InvalidJSONResponseException($result);
 		}
 		
-		return $result;
+		return $data;
 	}
 	
 	

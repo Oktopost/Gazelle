@@ -118,7 +118,7 @@ class ResponseData implements IResponseData
 	public function getJSON(): ?array
 	{
 		$body = $this->getBody();
-		$result = jsondecode($body);
+		$result = jsondecode($body, JSON_OBJECT_AS_ARRAY);
 		
 		return (is_array($result) ? $result : null);
 	}

@@ -25,8 +25,8 @@ interface IRequestParams extends IRequestConfig
 	public function resetParams(): void;
 	
 	public function getMethod(): string;
-	public function getURL(): string;
-	public function getURLObject(): URL;
+	public function getURLString(): string;
+	public function getURL(): URL;
 	public function getPath(): string;
 	public function getScheme(): string;
 	public function getDomain(): string;
@@ -77,7 +77,7 @@ interface IRequestParams extends IRequestConfig
 	public function setMethod(string $method): IRequestParams;
 	public function setHeader(string $header, string $value): IRequestParams;
 	public function setHeaders(array $headers, bool $mergeSingleValue = false): IRequestParams;
-	public function setBody(?string $body): IRequestParams;
+	public function setBody($body = null): IRequestParams;
 	
 	/**
 	 * @param array|\stdClass $body

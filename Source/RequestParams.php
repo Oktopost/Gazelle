@@ -5,6 +5,8 @@ namespace Gazelle;
 use Structura\URL;
 use Structura\Arrays;
 use Structura\Strings;
+use Objection\Mapper;
+use Objection\LiteObject;
 
 use Gazelle\Utils\OptionsConfig;
 use Gazelle\Exceptions\FatalGazelleException;
@@ -173,12 +175,12 @@ class RequestParams implements IRequestParams
 	}
 	
 	
-	public function getURL(): string
+	public function getURLString(): string
 	{
 		return $this->url->url();
 	}
 	
-	public function getURLObject(): URL
+	public function getURL(): URL
 	{
 		return $this->url;
 	}
@@ -407,10 +409,10 @@ class RequestParams implements IRequestParams
 	}
 	
 	/**
-	 * @param null|string $body
+	 * @param null|mixed $body
 	 * @return IRequestParams|static
 	 */
-	public function setBody(?string $body): IRequestParams
+	public function setBody($body = null): IRequestParams
 	{
 		if (is_null($body))
 		{
@@ -419,6 +421,15 @@ class RequestParams implements IRequestParams
 		else if (is_string($body))
 		{
 			$this->body = $body;
+		}
+		else if ($body instanceof LiteObject)
+		{
+			$body = Mapper::getArrayFor($body);
+			$this->body = jsonencode($body);
+		}
+		else if (is_array($body) || ($body instanceof \stdClass))
+		{
+			$this->body = jsonencode($body);
 		}
 		else
 		{

@@ -72,7 +72,7 @@ class OptionsConfig
 			}
 		}
 		
-		return $result ? [CURLOPT_HTTPHEADER => $headers] : [];
+		return $result ? [CURLOPT_HTTPHEADER => $result] : [];
 	}
 	
 	private static function setBody(IRequestParams $data): array 
@@ -96,7 +96,7 @@ class OptionsConfig
 	
 	private static function setURL(IRequestParams $data): array 
 	{
-		return [CURLOPT_URL => $data->getURL()];
+		return [CURLOPT_URL => $data->getURLString()];
 	}
 	
 	
