@@ -50,6 +50,11 @@ class RequestParams implements IRequestParams
 		$this->resetParams();
 	}
 	
+	public function __clone()
+	{
+		$this->url = clone $this->url;
+	}
+	
 	
 	public function resetParams(): void
 	{

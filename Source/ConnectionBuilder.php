@@ -12,6 +12,8 @@ use Gazelle\Exceptions\FatalGazelleException;
 
 class ConnectionBuilder implements IConnectionBuilder
 {
+	private $reuseConnection = true;
+	
 	/** @var IConnectionDecorator[]|string[]|callable */
 	private $decorators = [];
 	
@@ -30,7 +32,14 @@ class ConnectionBuilder implements IConnectionBuilder
 		}
 		else if ($this->connectionProvider)
 		{
-			return $this->connectionProvider->get();
+			$connection = $this->connectionProvider->get();
+			
+			if ($this->reuseConnection)
+			{
+				$this->connection = $connection;
+			}
+			
+			return $connection;
 		}
 		else
 		{
@@ -99,6 +108,24 @@ class ConnectionBuilder implements IConnectionBuilder
 		}
 	}
 	
+	
+	public function reuseConnection(bool $reuse): void
+	{
+		$this->reuseConnection = $reuse;
+		
+		if (!$reuse)
+		{
+			if ($this->connectionProvider)
+			{
+				$this->connection = null;
+			}
+			else if ($this->connection)
+			{
+				throw new FatalGazelleException(
+					'Reuse connection option can not be turned of if connection builder not provided');
+			}
+		}
+	}
 	
 	public function get(): IConnection
 	{

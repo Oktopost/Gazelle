@@ -13,11 +13,23 @@ use Gazelle\Utils\ErrorHandler;
 use Gazelle\Utils\HeadersParser;
 use Gazelle\Utils\IWithCurlOptions;
 
+use Gazelle\Exceptions\GazelleException;
+
 
 class CurlConnection implements IConnection
 {
 	private $curl = null;
 	
+	
+	private function validate(IRequestParams $data): void
+	{
+		$url = $data->getURL();
+		
+		if (!$url->Path && !$url->Host)
+		{
+			throw new GazelleException("Malformed URL: {$url->url()}");
+		}
+	}
 	
 	private function setOptions(IWithCurlOptions $from): void
 	{
@@ -110,6 +122,8 @@ class CurlConnection implements IConnection
 	
 	public function request(IRequestParams $requestData): IResponseData
 	{
+		$this->validate($requestData);
+		
 		if (!$this->curl)
 		{
 			$this->curl = curl_init();

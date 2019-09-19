@@ -9,14 +9,11 @@ use Gazelle\Exceptions\Response\Unexpected\InvalidJSONResponseException;
 
 class Request extends RequestParams implements IRequest
 {
-	/** @var IConnectionBuilder */
-	private $builder;
+	/** @var IConnection */
+	private $connection = null;
 	
 	/** @var GazelleException */
 	private $lastException = null;
-	
-	/** @var IConnection */
-	private $connection = null;
 	
 	
 	private function sendWithMethod(string $method): IResponseData
@@ -32,16 +29,17 @@ class Request extends RequestParams implements IRequest
 	}
 	
 	
-	public function __construct(IConnectionBuilder $builder)
+	public function __construct(IConnection $connection)
 	{
 		parent::__construct();
-		$this->builder = $builder;
+		$this->connection = $connection;
 	}
 	
 	public function __clone()
 	{
-		$this->builder = clone $this->builder;
-		$this->connection = null;
+		parent::__clone();
+		
+		$this->connection = clone $this->connection;
 		$this->lastException = null;
 	}
 	
@@ -49,12 +47,6 @@ class Request extends RequestParams implements IRequest
 	public function send(): IResponseData
 	{
 		$this->lastException = null;
-		
-		if (!$this->connection)
-		{
-			$this->connection = $this->builder->get();
-		}
-		
 		return $this->connection->request($this);
 	}
 	

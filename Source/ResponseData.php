@@ -2,6 +2,7 @@
 namespace Gazelle;
 
 
+use Gazelle\Exceptions\Response\Unexpected\InvalidJSONResponseException;
 use Structura\Arrays;
 
 
@@ -115,7 +116,20 @@ class ResponseData implements IResponseData
 		return $this->body;
 	}
 	
-	public function getJSON(): ?array
+	public function getJSON(): array
+	{
+		$body = $this->getBody();
+		$result = jsondecode($body, JSON_OBJECT_AS_ARRAY);
+		
+		if (!is_array($result))
+		{
+			throw new InvalidJSONResponseException($this);
+		}
+		
+		return $result;
+	}
+	
+	public function tryGetJSON(): ?array
 	{
 		$body = $this->getBody();
 		$result = jsondecode($body, JSON_OBJECT_AS_ARRAY);

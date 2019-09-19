@@ -3,6 +3,7 @@ namespace Gazelle;
 
 
 use Gazelle\Connections\CurlConnection;
+use Gazelle\Connections\BuilderConnectionProxy;
 
 
 class Gazelle
@@ -17,12 +18,15 @@ class Gazelle
 	public function __construct()
 	{
 		$this->builder = new ConnectionBuilder();
-		$this->template = new Request($this->builder);
+		$this->template = new Request(new BuilderConnectionProxy($this->builder));
 		
 		$this->builder->setMainObject(CurlConnection::class);
 	}
 	
-	
+	/**
+	 * @param string|IConnection|IConnectionBuilder $connection
+	 * @return Gazelle
+	 */
 	public function setConnection($connection): Gazelle
 	{
 		$this->builder->setMainObject($connection);
@@ -32,6 +36,12 @@ class Gazelle
 	public function addDecorator($decorator, bool $last = true): Gazelle
 	{
 		$this->builder->addDecorators($decorator, $last);
+		return $this;
+	}
+	
+	public function reuseConnection(bool $reuse): Gazelle
+	{
+		$this->builder->reuseConnection($reuse);
 		return $this;
 	}
 	
