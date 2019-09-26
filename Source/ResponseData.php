@@ -52,6 +52,11 @@ class ResponseData implements IResponseData
 		return $this;
 	}
 	
+	public function setHeader(string $header, string $value): ResponseData
+	{
+		$this->headers[$header] = $value;
+		return $this;
+	}
 	
 	public function getRequestParams(): IRequestParams
 	{
