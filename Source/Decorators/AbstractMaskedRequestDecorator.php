@@ -4,8 +4,8 @@ namespace Gazelle\Decorators;
 
 use Gazelle\IResponseData;
 use Gazelle\IRequestParams;
-use Gazelle\Exceptions\GazelleException;
 use Gazelle\AbstractConnectionDecorator;
+use Gazelle\Exceptions\GazelleException;
 
 
 abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorator
