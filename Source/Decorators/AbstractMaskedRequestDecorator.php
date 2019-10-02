@@ -6,6 +6,7 @@ use Gazelle\IResponseData;
 use Gazelle\IRequestParams;
 use Gazelle\AbstractConnectionDecorator;
 use Gazelle\Exceptions\GazelleException;
+use Gazelle\ResponseData;
 
 
 abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorator
@@ -14,7 +15,7 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 	
 	
 	/**
-	 * @param IRequestParams|IResponseData $requestData
+	 * @param IRequestParams|ResponseData $requestData
 	 */
 	private function maskHeaders($requestData): void
 	{
@@ -50,9 +51,45 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 		$this->maskQueryParams($requestData);
 	}
 	
-	private function maskResponse(IResponseData $responseData): void
+	private function maskResponse(ResponseData $responseData): void
 	{
 		$this->maskHeaders($responseData);
+	}
+	
+	private function process(bool $success, IRequestParams $request, ?IResponseData $response, ?GazelleException $ge): void
+	{
+		$requestCopy = null;
+		$responseCopy = null;
+		
+		if ($response)
+		{
+			$responseCopy = ResponseData::copy($response);
+			$requestCopy = $responseCopy->getRequestParams();
+		}
+		
+		if (!$requestCopy && $ge->request())
+		{
+			$requestCopy = clone $ge->request();
+		}
+		
+		if (!$requestCopy)
+		{
+			$requestCopy = clone $request;
+		}
+		
+		$this->maskRequest($requestCopy);
+		
+		if ($responseCopy)
+			$this->maskResponse($responseCopy);
+		
+		if ($success)
+		{
+			$this->onSuccess($requestCopy, $responseCopy);
+		}
+		else
+		{
+			$this->onError($requestCopy, $responseCopy, $ge);
+		}
 	}
 	
 	
@@ -77,30 +114,22 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 	{
 		$response = null;
 		
+		$exception = null;
+		$isSuccess = false;
+		
 		try
 		{
 			$response = $this->invokeChild($requestData);
-			
-			$maskedRequest = clone $response->getRequestParams();
-			$this->maskRequest($maskedRequest);
-			$this->maskResponse($response);
-			
-			$this->onSuccess($maskedRequest, $response);
+			$isSuccess = true;
 		}
-		catch (GazelleException $t)
+		catch (GazelleException $ge)
 		{
-			if ($t->request())
-			{
-				$this->maskRequest($t->request());
-			}
-			
-			if ($t->response())
-			{
-				$this->maskResponse($t->response());
-			}
-			
-			$this->onError($t->request(), $t->response(), $t);
+			$response = $ge->response() ?? null;
+			$exception = $ge;
+			$isSuccess = false;
 		}
+		
+		$this->process($isSuccess, $requestData, $response, $exception);
 		
 		return $response;
 	}
