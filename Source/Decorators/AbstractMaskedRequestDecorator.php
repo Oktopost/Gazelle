@@ -90,6 +90,9 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 		{
 			$this->onError($requestCopy, $responseCopy, $ge);
 		}
+		
+		if ($ge)
+			throw $ge;
 	}
 	
 	
