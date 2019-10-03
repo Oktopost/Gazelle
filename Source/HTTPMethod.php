@@ -10,13 +10,13 @@ class HTTPMethod
 	use TConstsClass;
 	
 	
-	public const GET		= 'get';
-	public const HEAD		= 'head';
-	public const POST		= 'post';
-	public const PUT		= 'put';
-	public const DELETE		= 'delete';
-	public const CONNECT	= 'connect';
-	public const OPTIONS	= 'options';
-	public const TRACE		= 'trace';
-	public const PATCH		= 'patch';
+	public const GET		= 'GET';
+	public const HEAD		= 'HEAD';
+	public const POST		= 'POST';
+	public const PUT		= 'PUT';
+	public const DELETE		= 'DELETE';
+	public const CONNECT	= 'CONNECT';
+	public const OPTIONS	= 'OPTIONS';
+	public const TRACE		= 'TRACE';
+	public const PATCH		= 'PATCH';
 }
