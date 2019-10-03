@@ -171,4 +171,14 @@ class ResponseData implements IResponseData
 	{
 		return  400 <= $this->code && $this->code < 500;
 	}
+	
+	
+	public static function copy(IResponseData $data): ResponseData
+	{
+		$result = new ResponseData($data->getRequestParams(), $data->requestMetaData());
+		$result->setHeaders($data->getHeaders());
+		$result->setBody($data->getBody());
+		
+		return $result;
+	}
 }
