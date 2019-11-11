@@ -178,6 +178,7 @@ class ResponseData implements IResponseData
 		$result = new ResponseData($data->getRequestParams(), $data->requestMetaData());
 		$result->setHeaders($data->getHeaders());
 		$result->setBody($data->getBody());
+		$result->setCode($data->getCode());
 		
 		return $result;
 	}
