@@ -4,6 +4,7 @@ namespace Gazelle;
 
 use Gazelle\Connections\CurlConnection;
 use Gazelle\Connections\BuilderConnectionProxy;
+use Gazelle\Exceptions\GazelleException;
 
 
 class Gazelle
@@ -62,5 +63,27 @@ class Gazelle
 			$request->setHeaders($headers);
 		
 		return $request;
+	}
+	
+	public function fileGetContent($url, bool $safe = false): ?string
+	{
+		if ($safe)
+		{
+			try
+			{
+				return $this->fileGetContent($url, false);
+			}
+			catch (GazelleException $e)
+			{
+				return null;
+			}
+		}
+		
+		return $this->request($url)->queryBody();
+	}
+	
+	public static function file_get_content($url): string
+	{
+		return (new Gazelle())->fileGetContent($url); 
 	}
 }
