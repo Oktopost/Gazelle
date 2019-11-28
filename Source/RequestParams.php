@@ -17,6 +17,8 @@ class RequestParams implements IRequestParams
 	/** @var URL */
 	private $url;
 	
+	private $tags = [];
+	
 	private $body;
 	private $method;
 	private $headers;
@@ -53,6 +55,22 @@ class RequestParams implements IRequestParams
 	public function __clone()
 	{
 		$this->url = clone $this->url;
+	}
+	
+	
+	public function getTags(): array
+	{
+		return $this->tags;
+	}
+	
+	/**
+	 * @param array $tags
+	 * @return static
+	 */
+	public function addTags(array $tags): IRequestParams
+	{
+		$this->tags = array_merge($this->tags, $tags);
+		return $this;
 	}
 	
 	

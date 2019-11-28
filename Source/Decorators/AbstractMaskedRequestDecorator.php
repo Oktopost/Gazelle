@@ -25,7 +25,7 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 
 			if ($value)
 			{
-				$value = static::getMaskedValue();
+				$value = $this->getMaskedValue();
 				$requestData->setHeader($header, $value);
 			}
 		}
@@ -39,7 +39,7 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 
 			if ($value)
 			{
-				$value = static::getMaskedValue();
+				$value = $this->getMaskedValue();
 				$requestData->setQueryParam($queryParam, $value);
 			}
 		}
@@ -92,7 +92,9 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 		}
 		
 		if ($ge)
+		{
 			throw $ge;
+		}
 	}
 	
 	
@@ -110,15 +112,16 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 		return [];
 	}
 	
-	protected static function getMaskedValue(): string { return self::MASK_VALUE; }
+	protected function getMaskedValue(): string
+	{
+		return self::MASK_VALUE; 
+	}
 	
 	
 	public function request(IRequestParams $requestData): IResponseData
 	{
 		$response = null;
-		
 		$exception = null;
-		$isSuccess = false;
 		
 		try
 		{

@@ -65,6 +65,7 @@ abstract class AbstractConnector
 	}
 	
 	
+	protected function getDefaultTags(): array { return []; }
 	protected function setupGazelle(Gazelle $gazelle): void {}
 	protected function setupTemplate(IRequestParams $template): void {}
 	
@@ -80,9 +81,11 @@ abstract class AbstractConnector
 	public function __construct()
 	{
 		$this->gazelle = new Gazelle();
+		$template = $this->gazelle->template();
 		
 		$this->setupGazelle($this->gazelle);
-		$this->setupTemplate($this->gazelle->template());
+		$this->setupTemplate($template);
+		$template->addTags($this->getDefaultTags());
 		
 		$decorators = $this->setupDecorators();
 		
