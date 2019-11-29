@@ -84,14 +84,21 @@ class OptionsConfig
 	
 	private static function setMethod(IRequestParams $data): array 
 	{
+		$options = $data->getCurlOptions();
 		$method = $data->getMethod();
+		$result = [];
 		
 		if ($method != HTTPMethod::GET)
 		{
-			return [CURLOPT_CUSTOMREQUEST => $method];
+			$result[CURLOPT_CUSTOMREQUEST] = $method;
 		}
 		
-		return [];
+		if ($method == HTTPMethod::HEAD && !key_exists(CURLOPT_NOBODY, $options))
+		{
+			$result[CURLOPT_NOBODY] = true;
+		}
+		
+		return $result;
 	}
 	
 	private static function setURL(IRequestParams $data): array 
