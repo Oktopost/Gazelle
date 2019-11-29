@@ -479,6 +479,17 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
+	/**
+	 * @param string $user
+	 * @param string $password
+	 * @return static
+	 */
+	public function basicAuth(string $user, string $password): IRequestParams
+	{
+		$this->setCurlOption(CURLOPT_USERPWD, "$user:$password");
+		return $this;
+	}
+	
 	
 	public function getAllCurlOptions(): array
 	{

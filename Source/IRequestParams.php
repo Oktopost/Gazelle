@@ -175,4 +175,11 @@ interface IRequestParams extends IRequestConfig
 	 * @return static
 	 */
 	public function setJsonBody($body): IRequestParams;
+	
+	/**
+	 * @param string $user
+	 * @param string $password
+	 * @return static
+	 */
+	public function basicAuth(string $user, string $password): IRequestParams;
 }
