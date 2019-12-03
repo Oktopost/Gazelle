@@ -369,7 +369,7 @@ class RequestParams implements IRequestParams
 	 */
 	public function setQueryParam(string $name, $value): IRequestParams
 	{
-		$this->url->setQueryParams([$name => $value]);
+		$this->url->addQueryParam($name, $value);
 		return $this;
 	}
 	
@@ -379,7 +379,7 @@ class RequestParams implements IRequestParams
 	 */
 	public function setQueryParams(array $params): IRequestParams
 	{
-		$this->url->setQueryParams($params);
+		$this->url->addQueryParams($params);
 		return $this;
 	}
 	

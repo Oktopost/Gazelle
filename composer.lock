@@ -130,16 +130,16 @@
         },
         {
             "name": "unstable-cacao/structura",
-            "version": "2.0.4",
+            "version": "2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/unstable-cacao/Structura.git",
-                "reference": "628e55939410c1800c214a7b3d4eb5bc176f22b4"
+                "reference": "9285fe5b82b37fe1470f4d0fb43d52a18b0723c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/unstable-cacao/Structura/zipball/628e55939410c1800c214a7b3d4eb5bc176f22b4",
-                "reference": "628e55939410c1800c214a7b3d4eb5bc176f22b4",
+                "url": "https://api.github.com/repos/unstable-cacao/Structura/zipball/9285fe5b82b37fe1470f4d0fb43d52a18b0723c0",
+                "reference": "9285fe5b82b37fe1470f4d0fb43d52a18b0723c0",
                 "shasum": ""
             },
             "require": {
@@ -164,12 +164,12 @@
             "authors": [
                 {
                     "name": "Alexey Puchkov",
-                    "role": "Developer",
-                    "email": "alexey.pkv@gmail.com"
+                    "email": "alexey.pkv@gmail.com",
+                    "role": "Developer"
                 }
             ],
             "homepage": "https://github.com/unstable-cacao/Structura",
-            "time": "2019-07-05T17:07:32+00:00"
+            "time": "2019-12-03T13:33:15+00:00"
         },
         {
             "name": "unstable-cacao/traitor",
