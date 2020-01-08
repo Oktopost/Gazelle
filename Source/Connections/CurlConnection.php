@@ -128,6 +128,10 @@ class CurlConnection implements IConnection
 		{
 			$this->curl = curl_init();
 		}
+		else
+		{
+			curl_reset($this->curl);
+		}
 		
 		return $this->send($requestData);
 	}
