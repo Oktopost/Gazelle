@@ -65,7 +65,7 @@ class Gazelle
 		return $request;
 	}
 	
-	public function fileGetContent($url, bool $safe = false): ?string
+	public function fileGetContent($url, bool $safe = false, ?GazelleException &$t = null): ?string
 	{
 		if ($safe)
 		{
@@ -75,6 +75,7 @@ class Gazelle
 			}
 			catch (GazelleException $e)
 			{
+				$t = $e;
 				return null;
 			}
 		}
@@ -82,8 +83,8 @@ class Gazelle
 		return $this->request($url)->queryBody();
 	}
 	
-	public static function file_get_content($url, bool $safe = false): string
+	public static function file_get_content($url, bool $safe = false, ?GazelleException &$t = null): string
 	{
-		return (new Gazelle())->fileGetContent($url, $safe); 
+		return (new Gazelle())->fileGetContent($url, $safe, $t); 
 	}
 }
