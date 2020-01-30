@@ -83,7 +83,7 @@ class Gazelle
 		return $this->request($url)->queryBody();
 	}
 	
-	public static function file_get_content($url, bool $safe = false, ?GazelleException &$t = null): string
+	public static function file_get_content($url, bool $safe = false, ?GazelleException &$t = null): ?string
 	{
 		return (new Gazelle())->fileGetContent($url, $safe, $t); 
 	}
