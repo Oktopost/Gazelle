@@ -13,11 +13,11 @@ interface IRequestMetaData
 	public function getLocalPort(): ?int;
 	public function getRemoteIP(): ?int;
 	public function getRemotePort(): ?int;
-	public function getNameLookupTime(): ?int;
-	public function getConnectionTime(): ?int;
-	public function getTotalTime(): ?int;
-	public function getRedirectsTime(): ?int;
-	public function getLastURL(): ?int;
+	public function getNameLookupTime(): ?float;
+	public function getConnectionTime(): ?float;
+	public function getTotalTime(): ?float;
+	public function getRedirectsTime(): ?float;
+	public function getLastURL(): ?string;
 	
 	/**
 	 * @param int $flag

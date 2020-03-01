@@ -490,6 +490,16 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
+	/**
+	 * @param string $agent
+	 * @return static
+	 */
+	public function setUserAgent(string $agent): IRequestParams
+	{
+		$this->setCurlOption(CURLOPT_USERAGENT, "$agent");
+		return $this;
+	}
+	
 	
 	public function getAllCurlOptions(): array
 	{

@@ -182,4 +182,10 @@ interface IRequestParams extends IRequestConfig
 	 * @return static
 	 */
 	public function basicAuth(string $user, string $password): IRequestParams;
+	
+	/**
+	 * @param string $agent
+	 * @return static
+	 */
+	public function setUserAgent(string $agent): IRequestParams;
 }

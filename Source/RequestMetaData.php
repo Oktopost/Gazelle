@@ -69,27 +69,27 @@ class RequestMetaData implements IRequestMetaData
 		return $this->all[CURLINFO_PRIMARY_PORT] ?? null;
 	}
 	
-	public function getNameLookupTime(): ?int
+	public function getNameLookupTime(): ?float
 	{
 		return $this->all[CURLINFO_NAMELOOKUP_TIME] ?? null;
 	}
 	
-	public function getConnectionTime(): ?int
+	public function getConnectionTime(): ?float
 	{
 		return $this->all[CURLINFO_CONNECT_TIME] ?? null;
 	}
 	
-	public function getTotalTime(): ?int
+	public function getTotalTime(): ?float
 	{
 		return $this->all[CURLINFO_TOTAL_TIME] ?? null;
 	}
 	
-	public function getRedirectsTime(): ?int
+	public function getRedirectsTime(): ?float
 	{
 		return $this->all[CURLINFO_REDIRECT_TIME] ?? null;
 	}
 	
-	public function getLastURL(): ?int
+	public function getLastURL(): ?string
 	{
 		return $this->all[CURLINFO_EFFECTIVE_URL] ?? null;
 	}
