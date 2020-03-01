@@ -3,7 +3,7 @@ namespace Gazelle\Exceptions\Response\ServerException;
 
 
 use Gazelle\Exceptions\Response\ServerErrorException;
-use Gazelle\IResponseData;
+use Gazelle\IResponse;
 
 
 class GenericServerException extends ServerErrorException
@@ -39,7 +39,7 @@ class GenericServerException extends ServerErrorException
 	}
 	
 	
-	public function __construct(IResponseData $data)
+	public function __construct(IResponse $data)
 	{
 		$code = $data->getCode();
 		parent::__construct($data, "$code: {$this->getErrorMessage($code)}");

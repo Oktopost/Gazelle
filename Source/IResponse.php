@@ -2,7 +2,7 @@
 namespace Gazelle;
 
 
-interface IResponseData
+interface IResponse
 {
 	public function getRequestParams(): IRequestParams;
 	public function requestMetaData(): IRequestMetaData;

@@ -2,11 +2,11 @@
 namespace Gazelle\Decorators;
 
 
-use Gazelle\IResponseData;
+use Gazelle\IResponse;
 use Gazelle\IRequestParams;
 use Gazelle\AbstractConnectionDecorator;
 use Gazelle\Exceptions\GazelleException;
-use Gazelle\ResponseData;
+use Gazelle\Response;
 
 
 abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorator
@@ -15,7 +15,7 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 	
 	
 	/**
-	 * @param IRequestParams|ResponseData $requestData
+	 * @param IRequestParams|Response $requestData
 	 */
 	private function maskHeaders($requestData): void
 	{
@@ -51,19 +51,19 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 		$this->maskQueryParams($requestData);
 	}
 	
-	private function maskResponse(ResponseData $responseData): void
+	private function maskResponse(Response $responseData): void
 	{
 		$this->maskHeaders($responseData);
 	}
 	
-	private function process(bool $success, IRequestParams $request, ?IResponseData $response, ?GazelleException $ge): void
+	private function process(bool $success, IRequestParams $request, ?IResponse $response, ?GazelleException $ge): void
 	{
 		$requestCopy = null;
 		$responseCopy = null;
 		
 		if ($response)
 		{
-			$responseCopy = ResponseData::copy($response);
+			$responseCopy = Response::copy($response);
 			$requestCopy = $responseCopy->getRequestParams();
 		}
 		
@@ -98,8 +98,8 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 	}
 	
 	
-	protected abstract function onSuccess(IRequestParams $maskedRequest, IResponseData $response): void;
-	protected abstract function onError(?IRequestParams $request, ?IResponseData $response, \Throwable $t): void;
+	protected abstract function onSuccess(IRequestParams $maskedRequest, IResponse $response): void;
+	protected abstract function onError(?IRequestParams $request, ?IResponse $response, \Throwable $t): void;
 	
 	
 	protected function getMaskedHeaders(): array
@@ -118,7 +118,7 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 	}
 	
 	
-	public function request(IRequestParams $requestData): IResponseData
+	public function request(IRequestParams $requestData): IResponse
 	{
 		$response = null;
 		$exception = null;

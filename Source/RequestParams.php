@@ -395,12 +395,31 @@ class RequestParams implements IRequestParams
 	
 	/**
 	 * @param string $header
-	 * @param string $value
+	 * @param string|null $value
 	 * @return IRequestParams|static
 	 */
-	public function setHeader(string $header, string $value): IRequestParams
+	public function setHeader(string $header, ?string $value = null): IRequestParams
 	{
-		$this->headers[$header] = $value;
+		if (is_null($value))
+		{
+			if (Strings::contains($header, ':'))
+			{
+				$result = explode(':', $header, 2);
+				$header = $result[0];
+				$value = $result[1];
+			}
+			else
+			{
+				$value = '';
+			}
+			
+			$this->headers[$header] = $value;
+		}
+		else
+		{
+			$this->headers[$header] = $value;
+		}
+		
 		return $this;
 	}
 	

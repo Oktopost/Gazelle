@@ -2,7 +2,7 @@
 namespace Gazelle\Decorators;
 
 
-use Gazelle\IResponseData;
+use Gazelle\IResponse;
 use Gazelle\IRequestParams;
 use Gazelle\AbstractConnectionDecorator;
 
@@ -12,7 +12,7 @@ abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 	private $maxRetries = 1;
 	
 	
-	private function requestWithRetries(IRequestParams $requestData): IResponseData
+	private function requestWithRetries(IRequestParams $requestData): IResponse
 	{
 		$requestNumber = 1;
 		
@@ -31,11 +31,11 @@ abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 	}
 	
 	
-	protected abstract function executeOnce(IRequestParams $requestData): ?IResponseData;
+	protected abstract function executeOnce(IRequestParams $requestData): ?IResponse;
 	protected abstract function shouldRetry(IRequestParams $requestData): bool;
 	
 	
-	protected function executeFinalTime(IRequestParams $requestData): IResponseData
+	protected function executeFinalTime(IRequestParams $requestData): IResponse
 	{
 		return $this->invokeChild($requestData);
 	}
@@ -52,7 +52,7 @@ abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 		return $this;
 	}
 	
-	public function request(IRequestParams $requestData): IResponseData
+	public function request(IRequestParams $requestData): IResponse
 	{
 		if (!$this->shouldRetry($requestData))
 		{

@@ -7,30 +7,30 @@ use Gazelle\Exceptions\GazelleException;
 
 interface IRequest extends IRequestParams
 {
-	public function get(): IResponseData;
-	public function put(): IResponseData;
-	public function post(): IResponseData;
-	public function head(): IResponseData;
-	public function delete(): IResponseData;
-	public function options(): IResponseData;
-	public function patch(): IResponseData;
+	public function get(): IResponse;
+	public function put(): IResponse;
+	public function post(): IResponse;
+	public function head(): IResponse;
+	public function delete(): IResponse;
+	public function options(): IResponse;
+	public function patch(): IResponse;
 	
-	public function tryGet(): ?IResponseData;
-	public function tryPut(): ?IResponseData;
-	public function tryPost(): ?IResponseData;
-	public function tryHead(): ?IResponseData;
-	public function tryDelete(): ?IResponseData;
-	public function tryOptions(): ?IResponseData;
-	public function tryPatch(): ?IResponseData;
+	public function tryGet(): ?IResponse;
+	public function tryPut(): ?IResponse;
+	public function tryPost(): ?IResponse;
+	public function tryHead(): ?IResponse;
+	public function tryDelete(): ?IResponse;
+	public function tryOptions(): ?IResponse;
+	public function tryPatch(): ?IResponse;
 	
-	public function send(): IResponseData;
+	public function send(): IResponse;
 	public function queryCode(): int;
 	public function queryOK(): bool;
 	public function queryHeaders(): array;
 	public function queryBody(): string;
 	public function queryJSON(): array;
 	
-	public function trySend(): ?IResponseData;
+	public function trySend(): ?IResponse;
 	public function tryQueryCode(): ?int;
 	public function tryQueryOK(): bool;
 	public function tryQueryHeaders(bool $defaultAsEmptyArray = false): ?array;

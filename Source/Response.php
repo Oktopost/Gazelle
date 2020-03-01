@@ -6,7 +6,7 @@ use Gazelle\Exceptions\Response\Unexpected\InvalidJSONResponseException;
 use Structura\Arrays;
 
 
-class ResponseData implements IResponseData
+class Response implements IResponse
 {
 	private $code;
 	private $headers;
@@ -28,31 +28,31 @@ class ResponseData implements IResponseData
 	}
 	
 	
-	public function setCode(int $code): ResponseData
+	public function setCode(int $code): Response
 	{
 		$this->code = $code;
 		return $this;
 	}
 	
-	public function setBody(string $body): ResponseData
+	public function setBody(string $body): Response
 	{
 		$this->body = $body;
 		return $this;
 	}
 	
-	public function setBodyCallback(callable $callback): ResponseData
+	public function setBodyCallback(callable $callback): Response
 	{
 		$this->bodyCallback = $callback;
 		return $this;
 	}
 	
-	public function setHeaders(array $headers): ResponseData
+	public function setHeaders(array $headers): Response
 	{
 		$this->headers = $headers;
 		return $this;
 	}
 	
-	public function setHeader(string $header, string $value): ResponseData
+	public function setHeader(string $header, string $value): Response
 	{
 		$this->headers[$header] = $value;
 		return $this;
@@ -173,9 +173,9 @@ class ResponseData implements IResponseData
 	}
 	
 	
-	public static function copy(IResponseData $data): ResponseData
+	public static function copy(IResponse $data): Response
 	{
-		$result = new ResponseData($data->getRequestParams(), $data->requestMetaData());
+		$result = new Response($data->getRequestParams(), $data->requestMetaData());
 		$result->setHeaders($data->getHeaders());
 		$result->setBody($data->getBody());
 		$result->setCode($data->getCode());

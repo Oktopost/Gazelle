@@ -2,7 +2,7 @@
 namespace Gazelle\Exceptions\Request;
 
 
-use Gazelle\IResponseData;
+use Gazelle\IResponse;
 use Gazelle\Exceptions\RequestException;
 
 
@@ -14,7 +14,7 @@ class TimeoutException extends RequestException
 	}
 	
 	
-	public function __construct(IResponseData $responseData)
+	public function __construct(IResponse $responseData)
 	{
 		$runtime = $responseData->requestMetaData()->getRuntime();
 		$runtime = $this->getRuntimeAsString($runtime);

@@ -2,7 +2,7 @@
 namespace Gazelle\Decorators;
 
 
-use Gazelle\IResponseData;
+use Gazelle\IResponse;
 use Gazelle\IRequestParams;
 use Gazelle\AbstractConnectionDecorator;
 
@@ -10,12 +10,12 @@ use Gazelle\AbstractConnectionDecorator;
 abstract class AbstractChainDecorator extends AbstractConnectionDecorator
 {
 	protected function before(IRequestParams $requestParams): void {}
-	protected function after(IResponseData $requestParams): void {}
+	protected function after(IResponse $requestParams): void {}
 	protected function onError(IRequestParams $requestParams, \Throwable $t): void {}
-	protected function finally(IRequestParams $requestParams, ?IResponseData $responseData, ?\Throwable $t): void {}
+	protected function finally(IRequestParams $requestParams, ?IResponse $responseData, ?\Throwable $t): void {}
 	
 	
-	public function request(IRequestParams $requestData): IResponseData
+	public function request(IRequestParams $requestData): IResponse
 	{
 		$responseData = null;
 		$error = null;

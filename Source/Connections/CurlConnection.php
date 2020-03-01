@@ -3,8 +3,8 @@ namespace Gazelle\Connections;
 
 
 use Gazelle\IConnection;
-use Gazelle\ResponseData;
-use Gazelle\IResponseData;
+use Gazelle\Response;
+use Gazelle\IResponse;
 use Gazelle\IRequestConfig;
 use Gazelle\IRequestParams;
 use Gazelle\RequestMetaData;
@@ -41,7 +41,7 @@ class CurlConnection implements IConnection
 		}
 	}
 	
-	private function parseCurlOutput(string $output, ResponseData $responseData): void
+	private function parseCurlOutput(string $output, Response $responseData): void
 	{
 		$headerSize = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
 		
@@ -67,14 +67,14 @@ class CurlConnection implements IConnection
 		}
 	}
 	
-	private function executeCurl(IRequestParams $requestData): ResponseData
+	private function executeCurl(IRequestParams $requestData): Response
 	{
 		$startTime = microtime(true);
 		$body = curl_exec($this->curl);
 		$endTime = microtime(true);
 		
 		$metaData = new RequestMetaData($startTime, $endTime);
-		$response = new ResponseData($requestData, $metaData);
+		$response = new Response($requestData, $metaData);
 		
 		if ($body === false)
 		{
@@ -87,14 +87,14 @@ class CurlConnection implements IConnection
 		return $response;
 	}
 	
-	private function parseResponse(ResponseData $responseData): ResponseData
+	private function parseResponse(Response $responseData): Response
 	{
 		$responseData->setCode(curl_getinfo($this->curl, CURLINFO_RESPONSE_CODE));
 		return $responseData;
 	}
 	
 	
-	private function send(IRequestParams $requestData): IResponseData
+	private function send(IRequestParams $requestData): IResponse
 	{
 		$this->setOptions($requestData);
 		
@@ -120,7 +120,7 @@ class CurlConnection implements IConnection
 	}
 	
 	
-	public function request(IRequestParams $requestData): IResponseData
+	public function request(IRequestParams $requestData): IResponse
 	{
 		$this->validate($requestData);
 		

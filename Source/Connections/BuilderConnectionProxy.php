@@ -3,7 +3,7 @@ namespace Gazelle\Connections;
 
 
 use Gazelle\IConnection;
-use Gazelle\IResponseData;
+use Gazelle\IResponse;
 use Gazelle\IRequestParams;
 use Gazelle\IConnectionBuilder;
 
@@ -25,7 +25,7 @@ class BuilderConnectionProxy implements IConnection
 	}
 	
 	
-	public function request(IRequestParams $requestData): IResponseData
+	public function request(IRequestParams $requestData): IResponse
 	{
 		$connection = $this->builder->get();
 		return $connection->request($requestData);

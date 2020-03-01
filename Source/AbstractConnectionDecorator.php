@@ -13,7 +13,7 @@ abstract class AbstractConnectionDecorator implements IConnectionDecorator
 		return $this->child;
 	}
 	
-	protected function invokeChild(IRequestParams $data): IResponseData
+	protected function invokeChild(IRequestParams $data): IResponse
 	{
 		return $this->child->request($data);
 	}

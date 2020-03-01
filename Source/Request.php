@@ -16,13 +16,13 @@ class Request extends RequestParams implements IRequest
 	private $lastException = null;
 	
 	
-	private function sendWithMethod(string $method): IResponseData
+	private function sendWithMethod(string $method): IResponse
 	{
 		$this->setMethod($method);
 		return $this->send();
 	}
 	
-	private function trySendWithMethod(string $method): ?IResponseData
+	private function trySendWithMethod(string $method): ?IResponse
 	{
 		$this->setMethod($method);
 		return $this->trySend();
@@ -44,13 +44,13 @@ class Request extends RequestParams implements IRequest
 	}
 	
 	
-	public function send(): IResponseData
+	public function send(): IResponse
 	{
 		$this->lastException = null;
 		return $this->connection->request($this);
 	}
 	
-	public function trySend(): ?IResponseData
+	public function trySend(): ?IResponse
 	{
 		try
 		{
@@ -70,73 +70,73 @@ class Request extends RequestParams implements IRequest
 	}
 	
 	
-	public function get(): IResponseData
+	public function get(): IResponse
 	{
 		return $this->sendWithMethod(HTTPMethod::GET);
 	}
 	
-	public function put(): IResponseData
+	public function put(): IResponse
 	{
 		return $this->sendWithMethod(HTTPMethod::PUT);
 	}
 	
-	public function post(): IResponseData
+	public function post(): IResponse
 	{
 		return $this->sendWithMethod(HTTPMethod::POST);
 	}
 	
-	public function head(): IResponseData
+	public function head(): IResponse
 	{
 		return $this->sendWithMethod(HTTPMethod::HEAD);
 	}
 	
-	public function delete(): IResponseData
+	public function delete(): IResponse
 	{
 		return $this->sendWithMethod(HTTPMethod::DELETE);
 	}
 	
-	public function options(): IResponseData
+	public function options(): IResponse
 	{
 		return $this->sendWithMethod(HTTPMethod::OPTIONS);
 	}
 	
-	public function patch(): IResponseData
+	public function patch(): IResponse
 	{
 		return $this->sendWithMethod(HTTPMethod::PATCH);
 	}
 	
 	
-	public function tryGet(): ?IResponseData
+	public function tryGet(): ?IResponse
 	{
 		return $this->trySendWithMethod(HTTPMethod::GET);
 	}
 	
-	public function tryPut(): ?IResponseData
+	public function tryPut(): ?IResponse
 	{
 		return $this->trySendWithMethod(HTTPMethod::PUT);
 	}
 	
-	public function tryPost(): ?IResponseData
+	public function tryPost(): ?IResponse
 	{
 		return $this->trySendWithMethod(HTTPMethod::POST);
 	}
 	
-	public function tryHead(): ?IResponseData
+	public function tryHead(): ?IResponse
 	{
 		return $this->trySendWithMethod(HTTPMethod::HEAD);
 	}
 	
-	public function tryDelete(): ?IResponseData
+	public function tryDelete(): ?IResponse
 	{
 		return $this->trySendWithMethod(HTTPMethod::DELETE);
 	}
 	
-	public function tryOptions(): ?IResponseData
+	public function tryOptions(): ?IResponse
 	{
 		return $this->trySendWithMethod(HTTPMethod::OPTIONS);
 	}
 	
-	public function tryPatch(): ?IResponseData
+	public function tryPatch(): ?IResponse
 	{
 		return $this->trySendWithMethod(HTTPMethod::PATCH);
 	}

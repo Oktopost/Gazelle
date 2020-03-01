@@ -6,11 +6,11 @@ use Gazelle\Exceptions\Request\TimeoutException;
 use Gazelle\Exceptions\ResponseException;
 use Gazelle\HTTPMethod;
 use Gazelle\IRequestParams;
-use Gazelle\IResponseData;
+use Gazelle\IResponse;
 
 class GetRequestRetryDecorator extends AbstractRetryDecorator
 {
-	protected function executeOnce(IRequestParams $requestData): ?IResponseData
+	protected function executeOnce(IRequestParams $requestData): ?IResponse
 	{
 		try
 		{
