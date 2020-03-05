@@ -8,6 +8,7 @@ use Gazelle\HTTPMethod;
 use Gazelle\IRequestParams;
 use Gazelle\IResponse;
 
+
 class GetRequestRetryDecorator extends AbstractRetryDecorator
 {
 	protected function executeOnce(IRequestParams $requestData): ?IResponse
@@ -46,6 +47,4 @@ class GetRequestRetryDecorator extends AbstractRetryDecorator
 			$requestData->getMethod() == HTTPMethod::GET || 
 			$requestData->getMethod() == HTTPMethod::HEAD;
 	}
-	
-	
 }

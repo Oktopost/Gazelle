@@ -9,7 +9,7 @@ use Gazelle\AbstractConnectionDecorator;
 
 abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 {
-	private $maxRetries = 1;
+	private $maxRetries;
 	
 	
 	private function requestWithRetries(IRequestParams $requestData): IResponse
@@ -43,6 +43,12 @@ abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 	protected function getMaxRetries(): int
 	{
 		return $this->maxRetries;
+	}
+	
+	
+	public function __construct(int $maxRetries = 1)
+	{
+		$this->maxRetries = $maxRetries;
 	}
 	
 	
