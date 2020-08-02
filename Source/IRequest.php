@@ -29,6 +29,7 @@ interface IRequest extends IRequestParams
 	public function queryHeaders(): array;
 	public function queryBody(): string;
 	public function queryJSON(): array;
+	public function queryJSONField(string $field);
 	
 	public function trySend(): ?IResponse;
 	public function tryQueryCode(): ?int;
@@ -36,6 +37,7 @@ interface IRequest extends IRequestParams
 	public function tryQueryHeaders(bool $defaultAsEmptyArray = false): ?array;
 	public function tryQueryBody(bool $defaultAsEmptyString = false): ?string;
 	public function tryQueryJSON(): ?array;
+	public function tryQueryJSONField(string $field, $default = null);
 	
 	public function getLastException(): ?GazelleException;
 	public function hasError(): bool;

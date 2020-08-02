@@ -20,6 +20,7 @@ class RequestParams implements IRequestParams
 	private $tags = [];
 	
 	private $body;
+	private $bodyParams;
 	private $method;
 	private $headers;
 	
@@ -76,10 +77,11 @@ class RequestParams implements IRequestParams
 	
 	public function resetParams(): void
 	{
-		$this->url		= new URL();
-		$this->body		= null;
-		$this->method 	= HTTPMethod::GET;
-		$this->headers	= [];
+		$this->url			= new URL();
+		$this->body			= null;
+		$this->bodyParams	= [];
+		$this->method 		= HTTPMethod::GET;
+		$this->headers		= [];
 	}
 	
 	
@@ -245,9 +247,21 @@ class RequestParams implements IRequestParams
 		return $this->url->url();
 	}
 	
+	public function getBodyParams(): array
+	{
+		return $this->getBodyParams();
+	}
+	
 	public function getBody(): ?string
 	{
-		return $this->body;
+		if ($this->bodyParams)
+		{
+			return http_build_query($this->bodyParams);
+		}
+		else
+		{
+			return $this->body;
+		}
 	}
 	
 	public function getHeaders(): array
@@ -384,6 +398,39 @@ class RequestParams implements IRequestParams
 	}
 	
 	/**
+	 * @param string $name
+	 * @param string|string[] $value
+	 * @return static
+	 */
+	public function setBodyParam(string $name, $value, bool $addHeader = true): IRequestParams
+	{
+		return $this->setBodyParams([$name => $value], $addHeader);
+	}
+	
+	/**
+	 * @param string[]|string[][] $params
+	 * @return static
+	 */
+	public function setBodyParams(array $params, bool $addHeader = true): IRequestParams
+	{
+		$this->body = null;
+		$this->bodyParams = array_merge($this->bodyParams, $params);
+		
+		if ($addHeader && !$this->getHeader('Content-Type'))
+		{
+			$this->setHeader('Content-Type', 'application/x-www-form-urlencoded');
+		}
+		
+		return $this;
+	}
+	
+	public function removeHeader(string $header): IRequestParams
+	{
+		unset($this->headers[$header]);
+		return $this;
+	}
+	
+	/**
 	 * @param string $method
 	 * @return IRequestParams|static
 	 */
@@ -477,6 +524,8 @@ class RequestParams implements IRequestParams
 		{
 			throw new FatalGazelleException('Invalid data type passed');
 		}
+		
+		$this->bodyParams = [];
 		
 		return $this;
 	}

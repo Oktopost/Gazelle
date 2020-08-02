@@ -84,6 +84,7 @@ interface IRequestParams extends IRequestConfig
 	
 	public function getQueryParams(): array;
 	public function getQueryString(): string;
+	public function getBodyParams(): array;
 	public function getBody(): ?string;
 	public function getHeaders(): array;
 	
@@ -145,17 +146,32 @@ interface IRequestParams extends IRequestConfig
 	public function setQueryParams(array $params): IRequestParams;
 	
 	/**
+	 * @param string $name
+	 * @param string|string[] $value
+	 * @return static
+	 */
+	public function setBodyParam(string $name, $value, bool $addHeader = true): IRequestParams;
+	
+	/**
+	 * @param string[]|string[][] $params
+	 * @return static
+	 */
+	public function setBodyParams(array $params, bool $addHeader = true): IRequestParams;
+	
+	/**
 	 * @param string $method
 	 * @return static
 	 */
 	public function setMethod(string $method): IRequestParams;
+	
+	public function removeHeader(string $header): IRequestParams;
 	
 	/**
 	 * @param string $header
 	 * @param string $value
 	 * @return static
 	 */
-	public function setHeader(string $header, string $value): IRequestParams;
+	public function setHeader(string $header, ?string $value = null): IRequestParams;
 	
 	/**
 	 * @param array $headers

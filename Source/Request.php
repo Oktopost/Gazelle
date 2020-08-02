@@ -4,6 +4,7 @@ namespace Gazelle;
 
 use Gazelle\Exceptions\GazelleException;
 use Gazelle\Exceptions\ResponseException;
+use Gazelle\Exceptions\Response\Unexpected\MissingJSONFieldException;
 use Gazelle\Exceptions\Response\Unexpected\InvalidJSONResponseException;
 
 
@@ -164,7 +165,6 @@ class Request extends RequestParams implements IRequest
 	
 	public function queryJSON(): array
 	{
-		$this->setMethod(HTTPMethod::GET);
 		$result = $this->send();
 		$data = $result->getJSON();
 		
@@ -174,6 +174,19 @@ class Request extends RequestParams implements IRequest
 		}
 		
 		return $data;
+	}
+	
+	public function queryJSONField(string $field)
+	{
+		$result = $this->send();
+		$jason = $result->getJSON();
+		
+		if (is_array($jason) && isset($jason[$field]))
+		{
+			return $jason[$field];
+		}
+		
+		throw new MissingJSONFieldException($result, $field);
 	}
 	
 	
@@ -221,6 +234,18 @@ class Request extends RequestParams implements IRequest
 		}
 		
 		return $json;
+	}
+	
+	public function tryQueryJSONField(string $field, $default = null)
+	{
+		try
+		{
+			return $this->queryJSONField($field);
+		}
+		catch (MissingJSONFieldException $e)
+		{
+			return $default;
+		}
 	}
 	
 	
