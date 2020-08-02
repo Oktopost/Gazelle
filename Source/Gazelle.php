@@ -2,9 +2,10 @@
 namespace Gazelle;
 
 
+use Gazelle\Utils\CertificateInfoQuery;
+use Gazelle\Exceptions\GazelleException;
 use Gazelle\Connections\CurlConnection;
 use Gazelle\Connections\BuilderConnectionProxy;
-use Gazelle\Exceptions\GazelleException;
 
 
 class Gazelle
@@ -86,5 +87,15 @@ class Gazelle
 	public static function file_get_content($url, bool $safe = false, ?GazelleException &$t = null): ?string
 	{
 		return (new Gazelle())->fileGetContent($url, $safe, $t); 
+	}
+	
+	public static function getCertificateInfo($from): ?CertificateInfo
+	{
+		return CertificateInfoQuery::getCertificateInfo($from);
+	}
+	
+	public static function tryGetCertificateInfo($from, \Throwable &$t = null): ?CertificateInfo
+	{
+		return CertificateInfoQuery::tryGetCertificateInfo($from, $t);
 	}
 }
