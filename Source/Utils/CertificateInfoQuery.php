@@ -86,7 +86,17 @@ class CertificateInfoQuery
 		$certificateURL = self::getCertificateURL($from);
 		
 		$context = stream_context_create(self::STREAM_PARAMS);
-		$data = @stream_socket_client($certificateURL, $errno, $err, $timeout, STREAM_CLIENT_CONNECT, $context);
+		
+		try
+		{
+			$data = @stream_socket_client($certificateURL, $errno, $err, $timeout, STREAM_CLIENT_CONNECT, $context);
+		}
+		catch (\Throwable $t)
+		{
+			throw new CertificateInfoException(
+				"Got error from stream_socket_client: {$t->getMessage()}",
+				null, 0, '');
+		}
 		
 		self::checkForErrors($data, $errno, $err);
 		
