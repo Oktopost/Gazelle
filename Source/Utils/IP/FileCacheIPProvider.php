@@ -1,28 +1,18 @@
 <?php
-namespace Gazelle\Utils;
+namespace Gazelle\Utils\IP;
 
 
-use Gazelle\DNS\DNSResolver;
 use Structura\Strings;
 
 
-class ManagedIPCache
+class FileCacheIPProvider extends AbstractIPProviderCache
 {
 	private string $host;
 	private ?string $cacheFile;
 	private int $ttl;
 	
-	private ?int $timeout = null;
-	private array $ips = [];
 	
-	
-	private function resolve(): void
-	{
-		$this->ips = DNSResolver::resolveToIPs($this->host);
-		$this->timeout = time() + $this->ttl;
-	}
-	
-	private function writeToFile(): void
+	private function writeToFile(array $ips): void
 	{
 		if (!$this->cacheFile)
 			return;
@@ -35,7 +25,6 @@ class ManagedIPCache
 			}
 		}
 		
-		echo "writing\n";
 		$file = fopen($this->cacheFile, 'c');
 		
 		try 
@@ -49,7 +38,7 @@ class ManagedIPCache
 			if (!ftruncate($file, 0))
 				throw new \Exception("Failed to truncate file {$this->cacheFile}");
 			
-			if (!fputs($file, implode(',', [$this->timeout, ...$this->ips])))
+			if (!fputs($file, implode(',', [time() + $this->ttl, ...$ips])))
 				throw new \Exception("Failed to write to file {$this->cacheFile}");
 		}
 		finally 
@@ -62,21 +51,21 @@ class ManagedIPCache
 		}
 	}
 	
-	private function readFromFile(): bool
+	private function readFromFile(): ?array
 	{
 		if (!$this->cacheFile || !file_exists($this->cacheFile) || !is_readable($this->cacheFile))
-			return false;
+			return null;
 
 		$data = null;
 		$file = fopen($this->cacheFile, 'r');
-		echo "reading\n";
+		
 		try 
 		{
 			if (!$file)
-				return false;
+				return null;
 			
 			if (!flock($file, LOCK_SH))
-				return false;
+				return null;
 			
 			$data = fgets($file);
 		}
@@ -90,36 +79,24 @@ class ManagedIPCache
 		}
 		
 		if (!$data)
-			return false;
+			return null;
 		
 		$data = explode(',', $data);
 		
 		if (count($data) <= 1 || ((int)($data[0])) <= time())
 		{
-			return false;
+			return null;
 		}
 		
-		$this->timeout = $data[0];
 		unset($data[0]);
-		$this->ips = array_values($data);
-			
-		return true;
-	}
-	
-	private function refreshCache(): void
-	{
-		if ($this->readFromFile())
-		{
-			return;
-		}
-		
-		$this->resolve();
-		$this->writeToFile();
+		return array_values($data);
 	}
 	
 	
 	public function __construct(string $host, int $ttl, ?string $cacheDir = null)
 	{
+		parent::__construct();
+		
 		if ($cacheDir)
 		{
 			$this->cacheFile = Strings::append($cacheDir, '/') . "_gazelle_{$host}_.cache";
@@ -137,26 +114,22 @@ class ManagedIPCache
 	/**
 	 * @return string[]
 	 */
-	public function getAllIPs(): array
+	protected function doGetAllIPs(): array
 	{
-		if (!$this->ips || $this->timeout < time())
+		$result = $this->readFromFile();
+		
+		if ($result)
 		{
-			$this->refreshCache();
+			return $result;
 		}
 		
-		echo $this->timeout . " " . time() . "\n";
-		return $this->ips;
-	}
-	
-	public function getRandomIP(): ?string
-	{
-		$ips = self::getAllIPs();
+		$result = $this->getParent()->getAllIPs();
 		
-		if (!$ips)
-			return null;
-		else if (count($ips) == 1)
-			return $ips[0];
+		if ($result)
+		{
+			$this->writeToFile($result);
+		}
 		
-		return $ips[random_int(0, count($ips) - 1)];
+		return $result;
 	}
 }
