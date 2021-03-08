@@ -12,13 +12,14 @@ class DNSRecordFactory
 	
 	private const MAP =
 	[
-		'A'	=> ARecord::class
+		'A'		=> ARecord::class,
+		'CNAME'	=> CNAMERecord::class,
 	];
 	
 	
 	public static function parseRecord(array $data): DNSRecord
 	{
-		$type = $record['type'] ?? null;
+		$type = $data['type'] ?? null;
 		$class = self::MAP[$type] ?? DNSRecord::class;
 		
 		$record = new $class();

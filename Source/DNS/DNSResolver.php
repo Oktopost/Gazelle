@@ -2,6 +2,8 @@
 namespace Gazelle\DNS;
 
 
+use Structura\Arrays;
+
 class DNSResolver
 {
 	private ?string $target;
@@ -152,6 +154,17 @@ class DNSResolver
 	{
 		return self::for($target)->query();
 	}
+	
+	/**
+	 * @param string $target
+	 * @param string|int|array $type
+	 * @return DNSRecord[]
+	 */
+	public static function queryType(string $target, $type): array
+	{
+		return self::for($target)->matchingType($type)->query();
+	}
+
 
 	/**
 	 * @param string $target
@@ -169,5 +182,51 @@ class DNSResolver
 	public static function queryCNAMERecords(string $target): array
 	{
 		return self::for($target)->matchingType(DNS_CNAME)->query();
+	}
+
+	/**
+	 * @param string $host
+	 * @return ARecord[]
+	 */
+	public static function resolveToARecords(string $host): array
+	{
+		$ips		= [];
+		$scanned	= [];
+		$hosts		= [$host => $host];
+		
+		while ($hosts)
+		{
+			$host = array_shift($hosts);
+			
+			if ($scanned[$host] ?? false)
+				continue;
+			
+			$scanned[$host] = true;
+			
+			$data = self::queryType($host, [DNS_A, DNS_CNAME]);
+			
+			foreach ($data as $record)
+			{
+				if ($record instanceof CNAMERecord)
+				{
+					$hosts[$record->Target] = $record->Target;
+				}
+				else if ($record instanceof ARecord)
+				{
+					$ips[$record->IP] = $record;
+				}
+			}
+		}
+		
+		return array_values($ips);
+	}
+
+	/**
+	 * @param string $host
+	 * @return string[]
+	 */
+	public static function resolveToIPs(string $host): array
+	{
+		return ARecord::getIPs(self::resolveToARecords($host));
 	}
 }
