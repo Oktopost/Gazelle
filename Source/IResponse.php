@@ -10,7 +10,7 @@ interface IResponse
 	public function getCode(): int;
 	
 	public function getHeaders(): array;
-	public function getHeader(string $key, bool $firstValue = true): ?string;
+	public function getHeader(string $key, bool $caseSensitive = false): ?string;
 	public function hasHeader(string $key): bool;
 	
 	public function hasBody(): bool;

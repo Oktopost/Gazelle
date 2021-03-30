@@ -79,16 +79,25 @@ class Response implements IResponse
 		return $this->headers;
 	}
 	
-	public function getHeader(string $key, bool $firstValue = true): ?string
+	public function getHeader(string $key, bool $caseSensitive = false): ?string
 	{
 		$value = $this->headers[$key] ?? null;
 		
-		if (!$value || is_string($value) || !$firstValue)
+		if (!$value && $caseSensitive)
 		{
-			return $value;
+			$key = strtolower($key);
+			
+			foreach ($this->headers as $index => $item)
+			{
+				if (strtolower($index) == $key)
+				{
+					$value = $item;
+					break;
+				}
+			}
 		}
 		
-		return Arrays::first($value);
+		return is_array($value) ? Arrays::first($value) : $value;
 	}
 	
 	public function hasHeader(string $key): bool
