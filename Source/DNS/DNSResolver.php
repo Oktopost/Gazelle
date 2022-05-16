@@ -2,8 +2,6 @@
 namespace Gazelle\DNS;
 
 
-use Structura\Arrays;
-
 class DNSResolver
 {
 	private ?string $target;

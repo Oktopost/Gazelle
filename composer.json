@@ -3,9 +3,9 @@
 	"type": "lib",
 	"require": 
 	{
-		"unstable-cacao/structura": "^2.0",
+		"unstable-cacao/structura": "^3.0",
 		"oktopost/jsonencode": "^1.0",
-		"unstable-cacao/traitor": "^1.0"
+		"unstable-cacao/traitor": "^2.0"
 	},
 	"license": "MIT",
 	"authors": 
@@ -17,8 +17,8 @@
 	],
 	"require-dev": 
 	{
-		"phpunit/phpunit": "^7.2",
-		"unstable-cacao/web-core": "^0.1.24"
+		"phpunit/phpunit": "^8.1",
+		"unstable-cacao/web-core": "^0.2.0"
 	},
 	"autoload":
 	{

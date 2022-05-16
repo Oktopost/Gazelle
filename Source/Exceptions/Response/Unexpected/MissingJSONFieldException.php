@@ -4,6 +4,7 @@ namespace Gazelle\Exceptions\Response\Unexpected;
 
 use Gazelle\IResponse;
 
+
 class MissingJSONFieldException extends InvalidJSONResponseException
 {
 	public function __construct(IResponse $data, $field)
