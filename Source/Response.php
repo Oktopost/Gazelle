@@ -133,7 +133,7 @@ class Response implements IResponse
 	public function getJSON(): array
 	{
 		$body = $this->getBody();
-		$result = jsondecode($body, JSON_OBJECT_AS_ARRAY);
+		$result = jsondecode_a($body);
 		
 		if (!is_array($result))
 		{
@@ -146,7 +146,7 @@ class Response implements IResponse
 	public function tryGetJSON(): ?array
 	{
 		$body = $this->getBody();
-		$result = jsondecode($body, JSON_OBJECT_AS_ARRAY);
+		$result = jsondecode_a($body);
 		
 		return (is_array($result) ? $result : null);
 	}

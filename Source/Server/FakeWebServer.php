@@ -123,7 +123,7 @@ class FakeWebServer
 		if (!file_exists($file))
 			return null;
 		
-		$result = unserialize(jsondecode(file_get_contents($file)));
+		$result = unserialize(jsondecode_std(file_get_contents($file)));
 		unlink($file);
 		
 		return $result;
