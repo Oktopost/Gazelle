@@ -9,38 +9,8 @@ use Gazelle\IRequestParams;
 use Gazelle\IResponse;
 
 
-class GetRequestRetryDecorator extends AbstractRetryDecorator
+class GetRequestRetryDecorator extends RequestRetryDecorator
 {
-	protected function executeOnce(IRequestParams $requestData): ?IResponse
-	{
-		try
-		{
-			$result = $this->invokeChild($requestData);
-		}
-		catch (TimeoutException $te)
-		{
-			return null;
-		}
-		catch (ResponseException $re)
-		{
-			if ($re->isServerError())
-			{
-				return null;
-			}
-			else
-			{
-				throw $re;
-			}
-		}
-		
-		if ($result->isFailed() && $result->isServerError())
-		{
-			return null;
-		}
-		
-		return $result;
-	}
-	
 	protected function shouldRetry(IRequestParams $requestData): bool
 	{
 		return 

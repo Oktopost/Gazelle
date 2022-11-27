@@ -9,7 +9,10 @@ use Gazelle\AbstractConnectionDecorator;
 
 abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 {
-	private $maxRetries;
+	private int $maxRetries;
+	
+	/** @var float|float[]|null */
+	private $delay = null;
 	
 	
 	private function requestWithRetries(IRequestParams $requestData): IResponse
@@ -25,6 +28,20 @@ abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 			{
 				return $result;
 			}
+			
+			if (!$this->delay)
+			{
+				continue;
+			}
+			
+			if (is_array($this->delay))
+			{
+				sleep($this->delay[$requestNumber - 2]);
+				
+				continue;
+			}
+			
+			sleep($this->delay);
 		}
 		
 		return $this->invokeChild($requestData);
@@ -43,6 +60,29 @@ abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 	protected function getMaxRetries(): int
 	{
 		return $this->maxRetries;
+	}
+	
+	
+	public static function withDelay(int $maxRetries, float $delay): self
+	{
+		$instance = new static($maxRetries);
+		
+		$instance->delay = $delay;
+		
+		return $instance;
+	}
+	
+	/**
+	 * @param float[] $retryPeriods
+	 * @return self
+	 */
+	public static function withDifferentDelays(array $retryPeriods): self
+	{
+		$instance = new static(count($retryPeriods));
+		
+		$instance->delay = $retryPeriods;
+		
+		return $instance;
 	}
 	
 	
