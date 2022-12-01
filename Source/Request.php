@@ -106,6 +106,11 @@ class Request extends RequestParams implements IRequest
 		return $this->sendWithMethod(HTTPMethod::PATCH);
 	}
 	
+	public function trace(): IResponse
+	{
+		return $this->sendWithMethod(HTTPMethod::TRACE);
+	}
+	
 	
 	public function tryGet(): ?IResponse
 	{
@@ -140,6 +145,11 @@ class Request extends RequestParams implements IRequest
 	public function tryPatch(): ?IResponse
 	{
 		return $this->trySendWithMethod(HTTPMethod::PATCH);
+	}
+	
+	public function tryTrace(): ?IResponse
+	{
+		return $this->trySendWithMethod(HTTPMethod::TRACE);
 	}
 	
 	

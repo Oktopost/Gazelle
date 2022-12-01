@@ -26,7 +26,7 @@ class CallbackDecorator extends AbstractConnectionDecorator
 		
 		if (!($result instanceof IResponse))
 		{
-			throw new FatalGazelleException('Return type of a callback decorator must be an instance of IResponseData');
+			throw new FatalGazelleException('Return type of a callback decorator must be an instance of IResponse');
 		}
 		
 		return $result;
