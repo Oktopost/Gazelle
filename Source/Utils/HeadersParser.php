@@ -13,6 +13,17 @@ class HeadersParser
 	use TStaticClass;
 	
 	
+	private static function parseSingleHeader(string $header): array
+	{
+		$result = explode(': ', $header, 2);
+		
+		if (isset($result[1]))
+			return $result;
+		
+		return [rtrim(trim($header), ':'), ''];
+	}
+	
+	
 	public static function getRequestHeaders(string $source): array
 	{
 		$source = str_replace("\r", '', $source);
@@ -60,13 +71,13 @@ class HeadersParser
 		
 		if ($requestSource && Strings::contains($requestSource[0], ':'))
 		{
-			[$key, $value] = explode(': ', $requestSource[0], 2);
+			[$key, $value] = self::parseSingleHeader($requestSource[0]);
 			$headers[$key] = $value;
 		}
 		
 		for ($i = 1; $i < count($requestSource); $i++)
 		{
-			[$key, $value] = explode(': ', $requestSource[$i], 2);
+			[$key, $value] = self::parseSingleHeader($requestSource[$i]);
 			
 			if (isset($headers[$key]) && $allowMultipleValues)
 			{
