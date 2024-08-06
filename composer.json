@@ -5,7 +5,8 @@
 	{
 		"unstable-cacao/structura": "^3.0",
 		"oktopost/jsonencode": "^1.0",
-		"unstable-cacao/traitor": "^2.0"
+		"unstable-cacao/traitor": "^2.0",
+		"ext-curl": "*"
 	},
 	"license": "MIT",
 	"authors": 

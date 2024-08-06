@@ -18,6 +18,7 @@ use Gazelle\Exceptions\GazelleException;
 
 class CurlConnection implements IConnection
 {
+	/** @var resource|null */
 	private $curl = null;
 	
 	
