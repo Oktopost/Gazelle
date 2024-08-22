@@ -2,6 +2,7 @@
 namespace Gazelle;
 
 
+use Gazelle\Multi\MultiController;
 use Gazelle\Utils\CertificateInfoQuery;
 use Gazelle\Exceptions\GazelleException;
 use Gazelle\Connections\CurlConnection;
@@ -83,6 +84,12 @@ class Gazelle
 		
 		return $this->request($url)->queryBody();
 	}
+	
+	public function multi(): MultiController
+	{
+		return new MultiController($this->template, $this->builder);
+	}
+	
 	
 	public static function file_get_content($url, bool $safe = false, ?GazelleException &$t = null): ?string
 	{

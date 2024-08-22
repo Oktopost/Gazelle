@@ -14,27 +14,26 @@ use Gazelle\Exceptions\FatalGazelleException;
 
 class RequestParams implements IRequestParams
 {
-	/** @var URL */
-	private $url;
+	private URL $url;
 	
-	private $tags = [];
+	private array $tags = [];
 	
-	private $body;
-	private $bodyParams;
-	private $method;
-	private $headers;
+	private ?string $body;
+	private array	$bodyParams;
+	private string	$method;
+	private array	$headers;
 	
-	private $throwOnFailedResponse	= true;
-	private $connectionTimeout		= 10.0;
-	private $executionTimeout		= 10.0;
-	private $maxRedirects			= 3;
+	private bool	$throwOnFailedResponse	= true;
+	private float	$connectionTimeout		= 10.0;
+	private float	$executionTimeout		= 10.0;
+	private int		$maxRedirects			= 3;
 	
-	private $curlOptions = [
+	private array $curlOptions = [
 		CURLOPT_RETURNTRANSFER	=> 1,
 		CURLOPT_HEADER			=> 1
 	];
 	
-	private $curlInfoOptions = [
+	private array $curlInfoOptions = [
 		CURLINFO_REDIRECT_COUNT,
 		CURLINFO_LOCAL_IP,
 		CURLINFO_LOCAL_PORT,
@@ -572,5 +571,29 @@ class RequestParams implements IRequestParams
 	public function getAllCurlOptions(): array
 	{
 		return OptionsConfig::generate($this);
+	}
+	
+	public function copy(RequestParams $from): void
+	{
+		$this->url						= clone $from->url;
+		$this->tags						= $from->tags;
+		$this->body						= $from->body;
+		$this->bodyParams				= $from->bodyParams;
+		$this->method					= $from->method;
+		$this->headers					= $from->headers;
+		$this->throwOnFailedResponse	= $from->throwOnFailedResponse;
+		$this->connectionTimeout		= $from->connectionTimeout;
+		$this->executionTimeout			= $from->executionTimeout;
+		$this->maxRedirects				= $from->maxRedirects;
+		$this->curlOptions				= $from->curlOptions;
+		$this->curlInfoOptions			= $from->curlInfoOptions;
+	}
+	
+	
+	public static function makeCopy(RequestParams $from): RequestParams
+	{
+		$copy = new RequestParams();
+		$copy->copy($from);
+		return $copy;
 	}
 }

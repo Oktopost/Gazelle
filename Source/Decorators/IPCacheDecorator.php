@@ -5,11 +5,12 @@ namespace Gazelle\Decorators;
 use Gazelle\IResponse;
 use Gazelle\IRequestParams;
 use Gazelle\AbstractConnectionDecorator;
-use Gazelle\Utils\IP\AbstractIPProviderCache;
-use Gazelle\Utils\IP\DNSIPProvider;
 use Gazelle\Utils\IP\IIPProvider;
+use Gazelle\Utils\IP\DNSIPProvider;
 use Gazelle\Utils\IP\FileCacheIPProvider;
 use Gazelle\Utils\IP\MemoryCacheIPProvider;
+use Gazelle\Utils\IP\AbstractIPProviderCache;
+
 use Structura\URL;
 
 
