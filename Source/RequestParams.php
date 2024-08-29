@@ -287,11 +287,6 @@ class RequestParams implements IRequestParams
 		return $this->method;
 	}
 	
-	
-	/**
-	 * @param string|URL $url
-	 * @return IRequestParams|static
-	 */
 	public function setURL($url): IRequestParams
 	{
 		if (is_string($url))
@@ -306,41 +301,24 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param int $port
-	 * @return IRequestParams
-	 */
 	public function setPort(int $port): IRequestParams
 	{
 		$this->url->Port = $port;
 		return $this;
 	}
 	
-	/**
-	 * @param string $scheme
-	 * @return IRequestParams|static
-	 */
 	public function setScheme(string $scheme): IRequestParams
 	{
 		$this->url->Scheme = $scheme;
 		return $this;
 	}
 	
-	/**
-	 * @param string $domain
-	 * @return IRequestParams|static
-	 */
 	public function setDomain(string $domain): IRequestParams
 	{
 		$this->url->Host = $domain;
 		return $this;
 	}
 	
-	/**
-	 * @param string $path
-	 * @param bool $clean
-	 * @return IRequestParams|static
-	 */
 	public function addPath(string $path, bool $clean = true): IRequestParams
 	{
 		$current = $this->url->Path;
@@ -370,10 +348,6 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param string $path
-	 * @return IRequestParams|static
-	 */
 	public function setPath(string $path): IRequestParams
 	{
 		$this->url->Path = $path;
@@ -385,29 +359,47 @@ class RequestParams implements IRequestParams
 	 * @param string|string[] $value
 	 * @return IRequestParams|static
 	 */
-	public function setQueryParam(string $name, $value): IRequestParams
+	public function setQueryParam(string $name, $value, bool $escape = true): IRequestParams
 	{
+		if ($escape)
+			$value = urlencode($value);
+		
 		$this->url->addQueryParam($name, $value);
 		return $this;
 	}
 	
 	/**
 	 * @param string[]|string[][] $params
-	 * @return IRequestParams|static
+	 * @param bool $escape
+	 * @return static
 	 */
-	public function setQueryParams(array $params): IRequestParams
+	public function setQueryParams(array $params, bool $escape = true): IRequestParams
 	{
+		if ($escape)
+		{
+			foreach ($params as $name => $value)
+			{
+				$params[$name] = urlencode($value);
+			}
+		}
+		
 		$this->url->addQueryParams($params);
+		
 		return $this;
 	}
 	
 	/**
 	 * @param string $name
 	 * @param string|string[] $value
+	 * @param bool $addHeader
+	 * @param bool $escape
 	 * @return static
 	 */
-	public function setBodyParam(string $name, $value, bool $addHeader = true): IRequestParams
+	public function setBodyParam(string $name, string|array $value, bool $addHeader = true, bool $escape = true): IRequestParams
 	{
+		if ($escape)
+			$value = urlencode($value);
+		
 		return $this->setBodyParams([$name => $value], $addHeader);
 	}
 	
@@ -415,8 +407,16 @@ class RequestParams implements IRequestParams
 	 * @param string[]|string[][] $params
 	 * @return static
 	 */
-	public function setBodyParams(array $params, bool $addHeader = true): IRequestParams
+	public function setBodyParams(array $params, bool $addHeader = true, bool $escape = true): IRequestParams
 	{
+		if ($escape)
+		{
+			foreach ($params as $name => $value)
+			{
+				$params[$name] = urlencode($value);
+			}
+		}
+		
 		$this->body = null;
 		$this->bodyParams = array_merge($this->bodyParams, $params);
 		
@@ -434,21 +434,12 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param string $method
-	 * @return IRequestParams|static
-	 */
 	public function setMethod(string $method): IRequestParams
 	{
 		$this->method = $method;
 		return $this;
 	}
 	
-	/**
-	 * @param string $header
-	 * @param string|null $value
-	 * @return IRequestParams|static
-	 */
 	public function setHeader(string $header, ?string $value = null): IRequestParams
 	{
 		if (is_null($value))
@@ -474,11 +465,6 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param array $headers
-	 * @param bool $mergeSingleValue
-	 * @return IRequestParams|static
-	 */
 	public function setHeaders(array $headers, bool $mergeSingleValue = false): IRequestParams
 	{
 		if (!$mergeSingleValue)
@@ -501,11 +487,7 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param null|mixed $body
-	 * @return IRequestParams|static
-	 */
-	public function setBody($body = null): IRequestParams
+	public function setBody(mixed $body = null): IRequestParams
 	{
 		if (is_null($body))
 		{
@@ -534,11 +516,7 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param array|\stdClass $body
-	 * @return IRequestParams|static
-	 */
-	public function setJsonBody($body): IRequestParams
+	public function setJsonBody(array|\stdClass $body): IRequestParams
 	{
 		$this->body = jsonencode($body);
 		

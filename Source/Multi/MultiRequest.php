@@ -31,11 +31,6 @@ class MultiRequest extends RequestParams
 		$this->handler = $handler;
 	}
 	
-	public function __clone()
-	{
-		parent::__clone();
-	}
-	
 	
 	public function get(): MultiResult
 	{

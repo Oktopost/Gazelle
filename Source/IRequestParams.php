@@ -137,73 +137,41 @@ interface IRequestParams extends IRequestConfig
 	/**
 	 * @param string $name
 	 * @param string|string[] $value
+	 * @param bool $escape
 	 * @return static
 	 */
-	public function setQueryParam(string $name, $value): IRequestParams;
+	public function setQueryParam(string $name, $value, bool $escape = true): IRequestParams;
 	
 	/**
 	 * @param string[]|string[][] $params
+	 * @param bool $escape
 	 * @return static
 	 */
-	public function setQueryParams(array $params): IRequestParams;
+	public function setQueryParams(array $params, bool $escape = true): IRequestParams;
 	
-	/**
-	 * @param string $name
-	 * @param string|string[] $value
-	 * @return static
-	 */
-	public function setBodyParam(string $name, $value, bool $addHeader = true): IRequestParams;
+	public function setBodyParam(string $name, string|array $value, bool $addHeader = true, bool $escape = true): IRequestParams;
 	
 	/**
 	 * @param string[]|string[][] $params
+	 * @param bool $addHeader
+	 * @param bool $escape
 	 * @return static
 	 */
-	public function setBodyParams(array $params, bool $addHeader = true): IRequestParams;
+	public function setBodyParams(array $params, bool $addHeader = true, bool $escape = true): IRequestParams;
 	
-	/**
-	 * @param string $method
-	 * @return static
-	 */
 	public function setMethod(string $method): IRequestParams;
 	
 	public function removeHeader(string $header): IRequestParams;
 	
-	/**
-	 * @param string $header
-	 * @param string $value
-	 * @return static
-	 */
 	public function setHeader(string $header, ?string $value = null): IRequestParams;
 	
-	/**
-	 * @param array $headers
-	 * @param bool $mergeSingleValue
-	 * @return static
-	 */
 	public function setHeaders(array $headers, bool $mergeSingleValue = false): IRequestParams;
 	
-	/**
-	 * @param null $body
-	 * @return static
-	 */
-	public function setBody($body = null): IRequestParams;
+	public function setBody(mixed $body = null): IRequestParams;
 	
-	/**
-	 * @param array|\stdClass $body
-	 * @return static
-	 */
-	public function setJsonBody($body): IRequestParams;
+	public function setJsonBody(array|\stdClass $body): IRequestParams;
 	
-	/**
-	 * @param string $user
-	 * @param string $password
-	 * @return static
-	 */
 	public function basicAuth(string $user, string $password): IRequestParams;
 	
-	/**
-	 * @param string $agent
-	 * @return static
-	 */
 	public function setUserAgent(string $agent): IRequestParams;
 }
