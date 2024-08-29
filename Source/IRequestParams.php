@@ -7,6 +7,8 @@ use Structura\URL;
 
 interface IRequestParams extends IRequestConfig
 {
+	public function getTag(int|string $key): mixed;
+	
 	public function getTags(): array;
 	
 	/**

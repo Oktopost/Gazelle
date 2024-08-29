@@ -2,23 +2,23 @@
 namespace Gazelle\Multi;
 
 
-use Gazelle\IRequestParams;
 use Gazelle\IResponse;
+use Gazelle\IRequestParams;
 use Gazelle\Exceptions\GazelleException;
 
 
 class MultiResult implements IMultiResult
 {
-	private IRequestParams	$request;
+	private MultiRequest	$request;
 	private IMultiExecutor	$executor;
-	
 	private ?IResponse		$response	= null;
 	private ?\Throwable		$error		= null;
 	
-	private array $onComplete	= [];
+	private array	$onComplete		= [];
+	private bool	$completeCalled	= false;
 	
 	
-	public function __construct(IRequestParams $request, IMultiExecutor $executor)
+	public function __construct(MultiRequest $request, IMultiExecutor $executor)
 	{
 		$this->request	= $request;
 		$this->executor	= $executor;
@@ -33,11 +33,6 @@ class MultiResult implements IMultiResult
 	public function response(): IResponse
 	{
 		return $this->response;
-	}
-	
-	public function metadata(): mixed
-	{
-		return $this->request->getMetadata();
 	}
 	
 	public function error(): ?\Throwable
@@ -55,11 +50,6 @@ class MultiResult implements IMultiResult
 		return $this->response || $this->error;
 	}
 	
-	public function hasMetadata(): bool
-	{
-		return !is_null($this->request->hasMetadata());
-	}
-	
 	public function onComplete(callable $callback): void
 	{
 		if ($this->isExecuted())
@@ -74,26 +64,43 @@ class MultiResult implements IMultiResult
 	
 	public function abort(): bool
 	{
-		if ($this->isExecuted())
+		if (!$this->executor->abort($this))
 			return false;
 		
-		return $this->executor->abort($this);
+		$this->reset();
+		
+		return true;
 	}
 	
 	
-	public function complete(?IResponse $response, ?\Throwable $error): void
+	public function setResult(?IResponse $response, ?\Throwable $error): void
 	{
 		if ($this->isExecuted())
-			throw new GazelleException('Complete called more than once for multi-request!');
-			
+			throw new GazelleException('setResult called more than once for multi-request!');
+		
 		$this->response = $response;
 		$this->error	= $error;
+	}
+	
+	public function reset(): void
+	{
+		$this->response = null;
+		$this->error	= null;
+	}
+	
+	public function complete(): void
+	{
+		if ($this->completeCalled)
+			throw new GazelleException('Complete called more than once for multi-request!');
 		
-		foreach ($this->onComplete as $callback)
+		$this->completeCalled = true;
+		
+		$all = $this->onComplete;
+		$this->onComplete = [];
+		
+		foreach ($all as $callback)
 		{
 			$callback($this);
 		}
-		
-		$this->onComplete = [];
 	}
 }

@@ -2,8 +2,17 @@
 namespace Gazelle\Connections;
 
 
-use Gazelle\IMultiConnection;
-use Gazelle\Multi\IMultiResult;
+use Gazelle\Multi\IMultiExecutor;
+use Gazelle\Response;
+use Gazelle\IRequestParams;
+use Gazelle\Multi\MultiResult;
+use Gazelle\Multi\MultiRequest;
+use Gazelle\Multi\IMultiConnection;
+
+use Gazelle\Exceptions\RequestException;
+use Gazelle\Exceptions\GazelleException;
+use Gazelle\Exceptions\Multi\InitMultiRequestException;
+use Gazelle\Exceptions\Multi\UnexpectedCurlHandleException;
 
 
 class MultiCurlConnection implements IMultiConnection
@@ -12,15 +21,44 @@ class MultiCurlConnection implements IMultiConnection
 	private array				$options		= [];
 	
 	
-	/** @var \CurlHandle */
+	/** @var \CurlHandle[] */
 	private array $curls = [];
 	
-	/** @var IMultiResult[] */
-	private array $pending = [];
+	/** @var MultiResult[] */
+	private array $results = [];
 	
-	/** @var IMultiResult[] */
-	private array $next = [];
 	
+	private function validateResultType($handle): void
+	{
+		if (!($handle instanceof \CurlHandle))
+		{
+			if (is_object($handle))
+				$name = get_class($handle);
+			else
+				$name = gettype($handle);
+			
+			throw new GazelleException("Expecting \CurlHandle. Got $name instead");
+		}
+	}
+	
+	private function findRequestForCurlHandle(\CurlHandle $handle): MultiResult
+	{
+		$index = array_search($handle, $this->curls, true);
+		
+		if ($index === false)
+		{
+			throw new UnexpectedCurlHandleException($handle);
+		}
+		
+		$result = $this->results[$index];
+		
+		array_splice($this->results, $index, 1);
+		array_splice($this->curls, $index, 1);
+		
+		$this->closeCurl($handle);
+		
+		return $result;
+	}
 	
 	private function closeCurl(\CurlHandle $curlHandle): void
 	{
@@ -29,11 +67,36 @@ class MultiCurlConnection implements IMultiConnection
 	}
 	
 	/**
-	 * @param ?\CurlHandle|mixed $handle
+	 * @param \CurlHandle|mixed $handle
+	 * @return MultiResult
 	 */
-	private function handleResult($handle): void
+	private function handleResult(mixed $handle): MultiResult
 	{
+		$this->validateResultType($handle);
+		$result = $this->findRequestForCurlHandle($handle);
 		
+		try 
+		{
+			$response	= $this->toResult($handle, $result->request());
+			$error		= null;
+		}
+		catch (RequestException $re)
+		{
+			$response	= $re->response();
+			$error		= $re;
+		}
+		catch (\Throwable $t)
+		{
+			$response	= null;
+			$error		= $t;
+		}
+		
+		$result->setResult(
+			$response,
+			$error
+		);
+		
+		return $result;
 	}
 	
 	private function initCurl(): void
@@ -53,6 +116,24 @@ class MultiCurlConnection implements IMultiConnection
 	public function __destruct()
 	{
 		$this->close();
+	}
+	
+	
+	public function toResult(\CurlHandle $handle, IRequestParams $request): Response
+	{
+		$code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+		
+		// Code 0 means that the connection was not established.
+		if ($code == 0)
+		{
+			$body = false;
+		}
+		else
+		{
+			$body = curl_multi_getcontent($handle) ?: ''; 
+		}
+		
+		return CurlParser::response($handle, $request, 0, 0, $body);
 	}
 	
 	
@@ -77,62 +158,64 @@ class MultiCurlConnection implements IMultiConnection
 	}
 	
 	
-	public function poll(): bool
+	public function send(MultiRequest $request, IMultiExecutor $executor): MultiResult
 	{
-		if (!$this->multiHandle)
-			return false;
+		$result		= new MultiResult($request, $executor);
+		$multiCurl	= $this->curlMultiHandle(true);
+		$curl		= CurlParser::request(null, $request); 
 		
-		curl_multi_exec($this->multiHandle, $isRunning);
+		$curlResult = curl_multi_add_handle($multiCurl, $curl);
 		
-		return $isRunning || $this->next;
+		if ($curlResult != 0)
+			throw new InitMultiRequestException($curlResult, $request);
+		
+		$this->curls[]		= $curl;
+		$this->results[]	= $result;
+		
+		return $result;
 	}
 	
-	public function init(IMultiResult $subject): void
+	public function next(float $timeout = 0.1): ?MultiResult
 	{
-		$this->initCurl();
+		$multiHandle = $this->multiHandle;
 		
-		$this->pending[] = $subject;
-	}
-	
-	public function abort(IMultiResult $subject): void
-	{
-		$inNext = array_search($subject, $this->next, true);
-		$inPending = array_search($subject, $this->pending, true);
+		if (!$multiHandle)
+			return null;
 		
-		if ($inNext !== false)
+		curl_multi_exec($multiHandle, $isRunning);
+		
+		$info = curl_multi_info_read($this->multiHandle);
+		
+		if (!$info)
 		{
-			array_splice($this->next, $inNext, 1);
+			curl_multi_select($multiHandle, $timeout);			
+			$info = curl_multi_info_read($this->multiHandle);
 		}
-		else if ($inPending !== false)
-		{
-			$this->closeCurl($this->curls[$inPending]);
-			
-			array_splice($this->pending, $inPending, 1);
-			array_splice($this->curls, $inPending, 1);
-		}
-	}
-	
-	public function next(float $timeout = 0.0): ?IMultiResult
-	{
-		if (!$this->multiHandle)
+		
+		if (!$info)
 		{
 			return null;
 		}
 		
-		if (!$this->next)
-		{
-			curl_multi_select($this->multiHandle, $timeout);
-					
-			$info = curl_multi_info_read($this->multiHandle);
-			
-			while ($info)
-			{
-				$this->handleResult($info['handle'] ?? null);
-				$info = curl_multi_info_read($this->multiHandle);
-			}
-		}
+		return $this->handleResult($info['handle'] ?? null);
+	}
+	
+	public function abort(MultiResult $result): bool
+	{
+		if ($result->isExecuted())
+			return false;
 		
-		return array_shift($this->next);
+		$index = array_search($result, $this->results, true);
+		
+		if ($index === false)
+			return false;
+		
+		$this->closeCurl($this->curls[$index]);
+		
+		array_splice($this->results, $index, 1);
+		array_splice($this->curls, $index, 1);
+		
+		return true;
 	}
 	
 	public function close(): void
@@ -145,8 +228,7 @@ class MultiCurlConnection implements IMultiConnection
 			$this->closeCurl($curl);
 		}
 		
-		$this->next		= [];
-		$this->pending	= [];
+		$this->results	= [];
 		$this->curls	= [];
 		
 		curl_multi_close($this->multiHandle);

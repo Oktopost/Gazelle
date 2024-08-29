@@ -58,6 +58,11 @@ class RequestParams implements IRequestParams
 	}
 	
 	
+	public function getTag(int|string $key): mixed
+	{
+		return $this->tags[$key] ?? null;
+	}
+	
 	public function getTags(): array
 	{
 		return $this->tags;

@@ -9,7 +9,6 @@ use Gazelle\Exceptions\GazelleException;
 
 class MultiRequest extends RequestParams
 {
-	private mixed					$metadata	= null;
 	private ?IMultiExecutor	$handler;
 	
 	
@@ -34,27 +33,7 @@ class MultiRequest extends RequestParams
 	
 	public function __clone()
 	{
-		if (!$this->handler)
-			throw new GazelleException('MutliRequest can be cloned only before it\'s executed');
-		
 		parent::__clone();
-	}
-	
-	
-	public function setMetadata(mixed $metadata): MultiRequest
-	{
-		$this->metadata = $metadata;
-		return $this;
-	}
-	
-	public function getMetadata(): mixed
-	{
-		return $this->metadata;
-	}
-	
-	public function hasMetadata(): bool
-	{
-		return !is_null($this->metadata);
 	}
 	
 	

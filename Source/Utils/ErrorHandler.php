@@ -16,22 +16,15 @@ class ErrorHandler
 	use TStaticClass;
 	
 	
-	/**
-	 * @param resource $resource
-	 * @param IResponse $data
-	 */
-	public static function handleCurlException($resource, IResponse $data): void
+	public static function handleCurlException(\CurlHandle $resource, IResponse $data): void
 	{
 		$code = curl_errno($resource);
 		
-		switch ($code)
+		throw match ($code) 
 		{
-			case CURLE_OPERATION_TIMEOUTED:
-				throw new TimeoutException($data);
-			
-			default:
-				throw new UnhandledCurlException($resource, $data->getRequestParams());
-		}
+			CURLE_OPERATION_TIMEOUTED	=> new TimeoutException($data),
+			default						=> new UnhandledCurlException($resource, $data->getRequestParams()),
+		};
 	}
 	
 	

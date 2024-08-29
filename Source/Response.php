@@ -184,10 +184,14 @@ class Response implements IResponse
 	
 	public static function copy(IResponse $data): Response
 	{
-		$result = new Response($data->getRequestParams(), $data->requestMetaData());
+		$result = new Response(
+			$data->getRequestParams(), 
+			$data->requestMetaData()
+		);
+		
+		$result->setCode($data->getCode());
 		$result->setHeaders($data->getHeaders());
 		$result->setBody($data->getBody());
-		$result->setCode($data->getCode());
 		
 		return $result;
 	}
