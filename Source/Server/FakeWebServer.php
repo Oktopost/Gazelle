@@ -1,13 +1,10 @@
 <?php
 namespace Gazelle\Server;
 
+
+use WebCore\IWebResponse;
+use WebCore\WebRequest;
 use WebCore\WebResponse;
-
-
-register_shutdown_function(function()
-{
-	FakeWebServer::stop();
-});
 
 
 class FakeWebServer
@@ -18,14 +15,29 @@ class FakeWebServer
 	private const RESPONSE_PATH = self::PATH_TEMPLATE . '_response';
 	
 	
-	private static $host;
-	private static $port;
+	private static bool $isShutdownRegistered = false;
 	
+	private static string	$host = "";
+	private static int		$port	= -1;
+	
+	
+	private static function initShutdown(): void
+	{
+		if (self::$isShutdownRegistered)
+			return;
+		
+		self::$isShutdownRegistered = true;
+		
+		register_shutdown_function(function()
+		{
+			FakeWebServer::stop();
+		});
+	}
 	
 	private static function getPath(string $template): string
 	{
 		if (!self::$host || !self::$port)
-			throw new \Exception('Host:port is not set');
+			return "";
 		
 		$result = str_replace('HOST', self::$host, $template);
 		$result = str_replace('PORT', self::$port, $result);
@@ -42,7 +54,12 @@ class FakeWebServer
 	
 	private static function getPid(): ?string
 	{
-		return file_exists(self::getPidPath()) ? file_get_contents(self::getPidPath()) : null;
+		$path = self::getPidPath();
+		
+		if (!$path)
+			return null;
+		
+		return file_exists($path) ? file_get_contents(self::getPidPath()) : null;
 	}
 	
 	private static function setPid(int $pId): void
@@ -71,15 +88,26 @@ class FakeWebServer
 	
 	public static function start(string $host = 'localhost', int $port = 8080): void
 	{
+		if (self::isRunning())
+		{
+			if (self::$host == $host && self::$port == $port)
+			{
+				return;
+			}
+			else
+			{
+				self::stop();
+			}
+		}
+		
+		self::initShutdown();
+		
 		self::$host = $host;
 		self::$port = $port;
 		
-		if (self::isRunning())
-			return;
-		
 		$publicPath = realpath(dirname(__FILE__)) . '/public';
 		
-		$query = 'php -S ' . $host . ':' . $port . ' -t ' . $publicPath . ' &> /dev/null & echo $!';
+		$query = 'php -S ' . $host . ':' . $port . ' -t ' . $publicPath . ' > /dev/null 2>&1 & echo $!';
 		self::setPid(exec($query));
 		
 		// server need some time to start
@@ -101,12 +129,9 @@ class FakeWebServer
 		unlink(self::getPidPath());
 	}
 	
-	/**
-	 * @param WebResponse|array|\stdClass|string|int $response
-	 */
-	public static function setResponse($response): void
+	public static function setResponse(IWebResponse|array|\stdClass|string|int $response): void
 	{
-		if (!$response instanceof WebResponse)
+		if (!$response instanceof IWebResponse)
 		{
 			$responseObject = new WebResponse();
 			$responseObject->setBody(is_scalar($response) ? $response : jsonencode($response));
@@ -116,14 +141,24 @@ class FakeWebServer
 		file_put_contents(self::getPath(self::RESPONSE_PATH), serialize($response));
 	}
 	
-	public static function getLastRequest()
+	public static function cleanupRequest(): void
+	{
+		$file = self::getPath(self::REQUEST_PATH);
+		
+		if (file_exists($file))
+		{
+			unlink($file);
+		}
+	}
+	
+	public static function getLastRequest(): ?ServerWebRequest
 	{
 		$file = self::getPath(self::REQUEST_PATH);
 		
 		if (!file_exists($file))
 			return null;
 		
-		$result = unserialize(jsondecode_std(file_get_contents($file)));
+		$result = ServerWebRequest::fromArray(jsondecode_a(file_get_contents($file)));
 		unlink($file);
 		
 		return $result;

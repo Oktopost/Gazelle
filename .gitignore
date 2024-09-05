@@ -3,6 +3,7 @@
 /.project
 /.settings
 /.idea
+/.cover
 
 # OS Folders
 .DS_Store

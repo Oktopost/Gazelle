@@ -30,7 +30,7 @@ class MultiResult implements IMultiResult
 		return $this->request;
 	}
 	
-	public function response(): IResponse
+	public function response(): ?IResponse
 	{
 		return $this->response;
 	}

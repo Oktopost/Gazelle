@@ -4,6 +4,8 @@ require_once '../../../vendor/autoload.php';
 
 use WebCore\WebRequest;
 use WebCore\WebResponse;
+use WebCore\IWebResponse;
+use WebServer\Response;
 
 
 class Server
@@ -32,26 +34,29 @@ class Server
 		$request = WebRequest::current();
 		
 		$requestData = [
-			'headers'	=> $request->getHeaders(),
-			'params'	=> $request->getParams(),
+			'url'		=> $request->getURL(), 
+			'uri'		=> $request->getURI(),
+			'host'		=> $request->getHost(), 
+			'isHttps'	=> $request->isHttps(),
 			'method'	=> $request->getMethod(),
-			'url'		=> $request->getURL(),
-			'uri'		=> $request->getURI()
+			'headers'	=> $request->getHeadersArray(),
+			'cookies'	=> $request->getCookiesArray(),
+			'get'		=> $request->getQueryArray(),
+			'params'	=> $request->getParamsArray(),
+			'body'		=> $request->getBody()
 		];
 		
-		file_put_contents($this->getPath(self::REQUEST_PATH), jsonencode(serialize($requestData)));
+		file_put_contents($this->getPath(self::REQUEST_PATH), jsonencode($requestData));
 		
 		if (file_exists($this->getPath(self::RESPONSE_PATH)))
 		{
-			/** @var WebResponse $response */
+			/** @var IWebResponse $response */
 			$response = unserialize(file_get_contents($this->getPath(self::RESPONSE_PATH)));
 			$response->apply();
 		}
 		else
 		{
-			$response = new WebResponse();
-			$response->setCode(500);
-			$response->apply();
+			Response::with(500)->apply();
 		}
 	}
 }

@@ -85,9 +85,9 @@ class Gazelle
 		return $this->request($url)->queryBody();
 	}
 	
-	public function multi(): MultiController
+	public function multi(): MultiGazelle
 	{
-		return new MultiController($this->template, $this->builder);
+		return new MultiGazelle($this->template);
 	}
 	
 	

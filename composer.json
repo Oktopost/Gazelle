@@ -19,8 +19,9 @@
 	],
 	"require-dev": 
 	{
-		"phpunit/phpunit": "^8.1",
-		"unstable-cacao/web-core": "^1.0.0"
+		"unstable-cacao/web-core": "^1.0.0",
+		"phpunit/phpunit": "^10.5",
+		"unstable-cacao/web-server": "^1.0"
 	},
 	"autoload":
 	{
@@ -29,9 +30,17 @@
 			"Gazelle\\": "Source/"
 		}
 	},
+	"autoload-dev":
+	{
+		"psr-4": 
+		{
+			"Gazelle\\": "Tests/"
+		}
+	},
 	"scripts":
 	{
-		"test": "./vendor/phpunit/phpunit/phpunit --dont-report-useless-tests"
+		"test": "./vendor/phpunit/phpunit/phpunit --dont-report-useless-tests",
+		"test-cover": "./vendor/phpunit/phpunit/phpunit --coverage-html .cover/"
 	},
 	"minimum-stability": "stable"
 }

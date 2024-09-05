@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+	bootstrap = "boot.php"
+	beStrictAboutTestsThatDoNotTestAnything = "false"
+	cacheResult = "false">
+	
+    <testsuites>
+        <testsuite name="Unittests">
+            <directory>Tests</directory>
+        </testsuite>
+    </testsuites>
+	
+    <source>
+        <include>
+            <directory>Source</directory>
+        </include>
+    </source>
+</phpunit>

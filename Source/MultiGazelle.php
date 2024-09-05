@@ -1,14 +1,16 @@
 <?php
-namespace Gazelle\Multi;
+namespace Gazelle;
 
 
+use Gazelle\Multi\MultiResult;
+use Gazelle\Multi\MultiRequest;
+use Gazelle\Multi\IMultiExecutor;
+use Gazelle\Multi\IMultiConnection;
 use Gazelle\Exceptions\GazelleException;
-use Gazelle\GazelleMock;
-use Gazelle\RequestParams;
 use Gazelle\Connections\MultiCurlConnection;
 
 
-class MultiController implements IMultiExecutor
+class MultiGazelle implements IMultiExecutor
 {
 	private RequestParams		$template;
 	private IMultiConnection	$connection;
