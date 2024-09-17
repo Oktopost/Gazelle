@@ -83,7 +83,7 @@ class Response implements IResponse
 	{
 		$value = $this->headers[$key] ?? null;
 		
-		if (!$value && $caseSensitive)
+		if (!$value && !$caseSensitive)
 		{
 			$key = strtolower($key);
 			

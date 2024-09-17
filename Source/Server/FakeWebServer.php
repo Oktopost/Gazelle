@@ -2,9 +2,8 @@
 namespace Gazelle\Server;
 
 
-use WebCore\IWebResponse;
-use WebCore\WebRequest;
 use WebCore\WebResponse;
+use WebCore\IWebResponse;
 
 
 class FakeWebServer

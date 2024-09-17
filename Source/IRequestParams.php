@@ -149,7 +149,8 @@ interface IRequestParams extends IRequestConfig
 	 */
 	public function setQueryParams(array $params, bool $escape = true): IRequestParams;
 	
-	public function setBodyParam(string $name, string|array $value, bool $addHeader = true, bool $escape = true): IRequestParams;
+	public function setBodyParam(string $name, string|array $value, 
+		bool $addHeader = true, bool $escape = true): IRequestParams;
 	
 	/**
 	 * @param string[]|string[][] $params
@@ -169,7 +170,7 @@ interface IRequestParams extends IRequestConfig
 	
 	public function setBody(mixed $body = null): IRequestParams;
 	
-	public function setJsonBody(array|\stdClass $body): IRequestParams;
+	public function setJsonBody(mixed $body): IRequestParams;
 	
 	public function basicAuth(string $user, string $password): IRequestParams;
 	

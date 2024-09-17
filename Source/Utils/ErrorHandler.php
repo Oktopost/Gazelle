@@ -2,13 +2,13 @@
 namespace Gazelle\Utils;
 
 
-use Gazelle\Exceptions\Request\TimeoutException;
 use Traitor\TStaticClass;
 
 use Gazelle\IResponse;
+use Gazelle\Exceptions\Request\TimeoutException;
+use Gazelle\Exceptions\Request\UnhandledCurlException;
 use Gazelle\Exceptions\Response\ServerException;
 use Gazelle\Exceptions\Response\ClientException;
-use Gazelle\Exceptions\Request\UnhandledCurlException;
 
 
 class ErrorHandler
@@ -20,7 +20,7 @@ class ErrorHandler
 	{
 		$code = curl_errno($resource);
 		
-		throw match ($code) 
+		throw match ($code)
 		{
 			CURLE_OPERATION_TIMEOUTED	=> new TimeoutException($data),
 			default						=> new UnhandledCurlException($resource, $data->getRequestParams()),

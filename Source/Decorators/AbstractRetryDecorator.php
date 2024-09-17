@@ -63,29 +63,6 @@ abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 	}
 	
 	
-	public static function withDelay(int $maxRetries, float $delay): self
-	{
-		$instance = new static($maxRetries);
-		
-		$instance->delay = $delay;
-		
-		return $instance;
-	}
-	
-	/**
-	 * @param float[] $retryPeriods
-	 * @return self
-	 */
-	public static function withDifferentDelays(array $retryPeriods): self
-	{
-		$instance = new static(count($retryPeriods));
-		
-		$instance->delay = $retryPeriods;
-		
-		return $instance;
-	}
-	
-	
 	public function __construct(int $maxRetries = 1)
 	{
 		$this->maxRetries = $maxRetries;
@@ -108,5 +85,38 @@ abstract class AbstractRetryDecorator extends AbstractConnectionDecorator
 		{
 			return $this->requestWithRetries($requestData);
 		}
+	}
+	
+	
+	public static function withDelay(int $maxRetries, float $delay): self
+	{
+		$instance = new static($maxRetries);
+		
+		$instance->delay = $delay;
+		
+		return $instance;
+	}
+	
+	/**
+	 * @param float[] $retryPeriods
+	 * @return self
+	 */
+	public static function withDelays(array $periods): self
+	{
+		$instance = new static(count($periods));
+		
+		$instance->delay = $periods;
+		
+		return $instance;
+	}
+	
+	/**
+	 * @deprecated 
+	 * @param float[] $retryPeriods
+	 * @return self
+	 */
+	public static function withDifferentDelays(array $retryPeriods): self
+	{
+		return self::withDelays($retryPeriods);
 	}
 }

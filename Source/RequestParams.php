@@ -365,6 +365,7 @@ class RequestParams implements IRequestParams
 			$value = urlencode($value);
 		
 		$this->url->addQueryParam($name, $value);
+		
 		return $this;
 	}
 	
@@ -395,7 +396,8 @@ class RequestParams implements IRequestParams
 	 * @param bool $escape
 	 * @return static
 	 */
-	public function setBodyParam(string $name, string|array $value, bool $addHeader = true, bool $escape = true): IRequestParams
+	public function setBodyParam(string $name, string|array $value,
+		bool $addHeader = true, bool $escape = true): IRequestParams
 	{
 		if ($escape)
 			$value = urlencode($value);
@@ -516,7 +518,7 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	public function setJsonBody(array|\stdClass $body): IRequestParams
+	public function setJsonBody(mixed $body): IRequestParams
 	{
 		$this->body = jsonencode($body);
 		

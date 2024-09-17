@@ -30,7 +30,6 @@ class HeadersParser
 		return array_filter(explode("\n\n", $source));
 	}
 	
-	
 	public static function parseAllHeaders($source, bool $allowMultipleValues = false): array
 	{
 		if (is_string($source))
