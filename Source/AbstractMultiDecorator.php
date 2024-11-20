@@ -26,6 +26,10 @@ abstract class AbstractMultiDecorator implements IMultiConnectionDecorator
 		$this->child = $connection;
 	}
 	
+	public function isRunning(): bool
+	{
+		return $this->child()->isRunning();
+	}
 	
 	public function sendUsing(MultiResult $result): void
 	{

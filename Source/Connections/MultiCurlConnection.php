@@ -165,6 +165,11 @@ class MultiCurlConnection implements IMultiConnection
 	}
 	
 	
+	public function isRunning(): bool
+	{
+		return (bool)($this->curls);
+	}
+	
 	public function send(MultiRequest $request, IMultiExecutor $executor): MultiResult
 	{
 		$result = new MultiResult($request, $executor);

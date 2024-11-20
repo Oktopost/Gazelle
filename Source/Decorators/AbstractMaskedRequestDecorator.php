@@ -12,7 +12,7 @@ use Gazelle\Multi\IMultiExecutor;
 use Gazelle\Exceptions\GazelleException;
 
 
- abstract class AbstractMaskedRequestDecorator extends AbstractAnyConnectionDecorator
+abstract class AbstractMaskedRequestDecorator extends AbstractAnyConnectionDecorator
 {
 	private const MASK_VALUE = '--masked--';
 	

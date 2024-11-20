@@ -24,6 +24,11 @@ abstract class AbstractAnyConnectionDecorator implements IConnectionDecorator, I
 	}
 	
 	
+	public function isRunning(): bool
+	{
+		return $this->child->isRunning();
+	}
+	
 	public function setChild(IConnection $connection): void
 	{
 		$this->child = $connection;
