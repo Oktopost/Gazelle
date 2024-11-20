@@ -16,6 +16,7 @@ class Gazelle
 	
 	/** @var ConnectionBuilder */
 	private $builder;
+	private array $multiDecorators = [];
 	
 	
 	public function __construct()
@@ -39,6 +40,20 @@ class Gazelle
 	public function addDecorator($decorator, bool $last = true): Gazelle
 	{
 		$this->builder->addDecorators($decorator, $last);
+		return $this;
+	}
+	
+	public function addMultiDecorators($decorators): static
+	{
+		if (is_array($decorators))
+		{
+			$this->multiDecorators = array_merge($this->multiDecorators, $decorators);
+		}
+		else
+		{
+			$this->multiDecorators[] = $decorators;
+		}
+		
 		return $this;
 	}
 	
@@ -87,7 +102,7 @@ class Gazelle
 	
 	public function multi(): MultiGazelle
 	{
-		return new MultiGazelle($this->template);
+		return new MultiGazelle($this->template, $this->multiDecorators);
 	}
 	
 	

@@ -2,6 +2,7 @@
 namespace Gazelle;
 
 
+use Gazelle\Multi\IMultiConnectionDecorator;
 use Gazelle\Multi\MultiResult;
 use Gazelle\Multi\MultiRequest;
 use Gazelle\Multi\IMultiExecutor;
@@ -51,10 +52,25 @@ class MultiGazelle implements IMultiExecutor
 	}
 	
 	
-	public function __construct(RequestParams $template) //, ConnectionBuilder $builder)
+	/**
+	 * @param RequestParams $template
+	 * @param string[]|IMultiConnectionDecorator[] $decorators
+	 */
+	public function __construct(RequestParams $template, array $decorators) //, ConnectionBuilder $builder)
 	{
 		$this->template		= RequestParams::makeCopy($template);
-		$this->connection	= GazelleMock::$multiConnection ?? new MultiCurlConnection();
+		$previous = GazelleMock::$multiConnection ?? new MultiCurlConnection();
+		
+		foreach ($decorators as $decorator)
+		{
+			if (is_string($decorator))
+				$decorator = new $decorator();
+			
+			$decorator->setNextConnection($previous);
+			$previous = $decorator;
+		}
+		
+		$this->connection = $previous;
 	}
 	
 	

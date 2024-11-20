@@ -133,7 +133,14 @@ class MultiCurlConnection implements IMultiConnection
 			$body = curl_multi_getcontent($handle) ?: ''; 
 		}
 		
-		return CurlParser::response($handle, $request, 0, 0, $body);
+		$response = CurlParser::response($handle, $request, 0, 0, $body);
+		
+		if ($code != 0)
+		{
+			$response->setCode($code);
+		}
+		
+		return $response;
 	}
 	
 	
@@ -160,9 +167,22 @@ class MultiCurlConnection implements IMultiConnection
 	
 	public function send(MultiRequest $request, IMultiExecutor $executor): MultiResult
 	{
-		$result		= new MultiResult($request, $executor);
+		$result = new MultiResult($request, $executor);
+		
+		$this->sendUsing($result);
+		
+		return $result;
+	}
+	
+	public function sendUsing(MultiResult $result): void
+	{
+		$result->reset();
+		
+		/** @var MultiRequest $request */
+		$request	= $result->request();
+		
 		$multiCurl	= $this->curlMultiHandle(true);
-		$curl		= CurlParser::request(null, $request); 
+		$curl		= CurlParser::request(null, $request);
 		
 		$curlResult = curl_multi_add_handle($multiCurl, $curl);
 		
@@ -171,8 +191,6 @@ class MultiCurlConnection implements IMultiConnection
 		
 		$this->curls[]		= $curl;
 		$this->results[]	= $result;
-		
-		return $result;
 	}
 	
 	public function next(float $timeout = 0.1): ?MultiResult

@@ -28,7 +28,7 @@ class CurlConnection implements IConnection
 		);
 	}
 	
-	private function parseResponse(Response $responseData): Response
+	private function parseCode(Response $responseData): Response
 	{
 		$responseData->setCode(curl_getinfo($this->curl, CURLINFO_RESPONSE_CODE));
 		return $responseData;
@@ -40,7 +40,7 @@ class CurlConnection implements IConnection
 		CurlParser::request($this->curl, $requestData);
 		
 		$response = $this->executeCurl($requestData);
-		$response = $this->parseResponse($response);
+		$response = $this->parseCode($response);
 		
 		if ($requestData->getParseResponseForErrors())
 		{
