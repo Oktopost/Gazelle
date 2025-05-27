@@ -21,7 +21,7 @@ class TimeoutException extends RequestException
 		
 		parent::__construct(
 			$responseData->getRequestParams(),
-			"Connection timeout out after $runtime seconds",
+			"Connection timeout after $runtime seconds",
 			CURLE_OPERATION_TIMEOUTED);
 	}
 }
