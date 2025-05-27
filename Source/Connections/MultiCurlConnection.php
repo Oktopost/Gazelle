@@ -27,6 +27,9 @@ class MultiCurlConnection implements IMultiConnection
 	/** @var MultiResult[] */
 	private array $results = [];
 	
+	/** @var MultiResult[] */
+	private array $completedResults = [];
+	
 	
 	private function validateResultType($handle): void
 	{
@@ -51,11 +54,10 @@ class MultiCurlConnection implements IMultiConnection
 		}
 		
 		$result = $this->results[$index];
+		$this->closeCurl($handle);
 		
 		array_splice($this->results, $index, 1);
 		array_splice($this->curls, $index, 1);
-		
-		$this->closeCurl($handle);
 		
 		return $result;
 	}
@@ -77,24 +79,21 @@ class MultiCurlConnection implements IMultiConnection
 		
 		try 
 		{
-			$response	= $this->toResult($handle, $result->request());
-			$error		= null;
+			$response = $this->toResult($handle, $result->request());
+			$error = null;
 		}
-		catch (RequestException $re)
+		catch (RequestException $re) 
 		{
-			$response	= $re->response();
-			$error		= $re;
+			$response = $re->response();
+			$error = $re;
 		}
-		catch (\Throwable $t)
+		catch (\Throwable $t) 
 		{
-			$response	= null;
-			$error		= $t;
+			$response = null;
+			$error = $t;
 		}
 		
-		$result->setResult(
-			$response,
-			$error
-		);
+		$result->setResult($response, $error);
 		
 		return $result;
 	}
@@ -122,9 +121,9 @@ class MultiCurlConnection implements IMultiConnection
 	public function toResult(\CurlHandle $handle, IRequestParams $request): Response
 	{
 		$code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+		$curlError = curl_errno($handle);
 		
-		// Code 0 means that the connection was not established.
-		if ($code == 0)
+		if ($curlError !== CURLE_OK)
 		{
 			$body = false;
 		}
@@ -133,7 +132,8 @@ class MultiCurlConnection implements IMultiConnection
 			$body = curl_multi_getcontent($handle) ?: ''; 
 		}
 		
-		$response = CurlParser::response($handle, $request, 0, 0, $body);
+		$totalTime = curl_getinfo($handle, CURLINFO_TOTAL_TIME) ?? 0.0;
+		$response = CurlParser::response($handle, $request, 0, $totalTime, $body);
 		
 		if ($code != 0)
 		{
@@ -184,44 +184,103 @@ class MultiCurlConnection implements IMultiConnection
 		$result->reset();
 		
 		/** @var MultiRequest $request */
-		$request	= $result->request();
-		
-		$multiCurl	= $this->curlMultiHandle(true);
-		$curl		= CurlParser::request(null, $request);
+		$request = $result->request();
+		$multiCurl = $this->curlMultiHandle(true);
+		$curl = CurlParser::request(null, $request);
 		
 		$curlResult = curl_multi_add_handle($multiCurl, $curl);
 		
 		if ($curlResult != 0)
 			throw new InitMultiRequestException($curlResult, $request);
 		
-		$this->curls[]		= $curl;
-		$this->results[]	= $result;
+		$this->curls[] = $curl;
+		$this->results[] = $result;
 	}
 	
 	public function next(float $timeout = 0.1): ?MultiResult
 	{
-		$multiHandle = $this->multiHandle;
-		
-		if (!$multiHandle)
+		if (!$this->multiHandle)
 			return null;
 		
-		curl_multi_exec($multiHandle, $isRunning);
+		if ($this->completedResults)
+			return array_shift($this->completedResults);
 		
-		$info = curl_multi_info_read($this->multiHandle);
+		curl_multi_exec($this->multiHandle, $isRunning);
+		$results = $this->collectCompletedRequests();
 		
-		if (!$info)
+		// Handle orphaned requests (curl internal state mismatch)
+		if ($isRunning == 0 && $this->curls)
 		{
-			curl_multi_select($multiHandle, $timeout);			
-			$info = curl_multi_info_read($this->multiHandle);
+			$this->processOrphanedRequests();
 		}
 		
-		if (!$info)
+		if (!$results && $timeout > 0) 
 		{
-			return null;
+			curl_multi_select($this->multiHandle, $timeout);
+			curl_multi_exec($this->multiHandle, $isRunning);
+			$results = $this->collectCompletedRequests();
 		}
 		
-		return $this->handleResult($info['handle'] ?? null);
+		if ($results) 
+		{
+			$first = array_shift($results);
+			if ($results) 
+			{
+				array_unshift($this->completedResults, ...$results);
+			}
+			return $first;
+		}
+		
+		return null;
 	}
+	
+	private function collectCompletedRequests(): array
+	{
+		$results = [];
+		while (($info = curl_multi_info_read($this->multiHandle)) !== false) 
+		{
+			if ($info['msg'] === CURLMSG_DONE) 
+			{
+				$results[] = $this->handleResult($info['handle'] ?? null);
+			}
+		}
+		
+		return $results;
+	}
+	
+	private function processOrphanedRequests(): void
+	{
+		foreach ($this->curls as $i => $curl) 
+		{
+			$result = $this->results[$i];
+			$errno = curl_errno($curl);
+			$error = curl_error($curl) ?: 'Request failed or timed out';
+			
+			try 
+			{
+				$response = $this->toResult($curl, $result->request());
+			}
+			catch (\Throwable $t) 
+			{
+				$response = null;
+				$error = "Failed to process response: " . $t->getMessage();
+			}
+			
+			$result->setResult($response, new \Exception($error, $errno));
+			$this->completedResults[] = $result;
+		}
+		
+		// Clean up orphaned handles
+		foreach ($this->curls as $curl) 
+		{
+			curl_multi_remove_handle($this->multiHandle, $curl);
+			curl_close($curl);
+		}
+		
+		$this->curls = [];
+		$this->results = [];
+	}
+	
 	
 	public function abort(MultiResult $result): bool
 	{
@@ -253,6 +312,7 @@ class MultiCurlConnection implements IMultiConnection
 		
 		$this->results	= [];
 		$this->curls	= [];
+		$this->completedResults = [];
 		
 		curl_multi_close($this->multiHandle);
 		

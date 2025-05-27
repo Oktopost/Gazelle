@@ -26,15 +26,15 @@ class MultiGazelle implements IMultiExecutor
 	
 	private function consumeNext(float $timeout = 0.0): void
 	{
+		$this->pending = array_values(array_filter($this->pending, fn($result) => !$result->isExecuted()));
+		
 		$result = $this->connection->next($timeout);
 		
-		while ($result != null)
+		while ($result) 
 		{
 			$this->removePending($result);
-			
 			$this->next[] = $result;
 			$result->complete();
-			
 			$result = $this->connection->next(0.0);
 		}
 	}
@@ -144,13 +144,14 @@ class MultiGazelle implements IMultiExecutor
 		
 		$endTime = microtime(true) + $timeout;
 		
-		$this->consumeNext($timeout);
+		$this->consumeNext(min($timeout, 1.0));
 		
 		$now = microtime(true);
 		
 		while ($this->hasPending() && $now <= $endTime)
 		{
-			$this->consumeNext($timeout);
+			$remainingTime = max(0.1, $endTime - $now);
+			$this->consumeNext(min($remainingTime, 1.0));
 			$now = microtime(true);
 		}
 		
