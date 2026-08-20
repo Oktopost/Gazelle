@@ -2,10 +2,10 @@
 namespace Gazelle\Decorators;
 
 
-use Gazelle\Exceptions\Request\TimeoutException;
-use Gazelle\Exceptions\ResponseException;
-use Gazelle\IRequestParams;
 use Gazelle\IResponse;
+use Gazelle\IRequestParams;
+use Gazelle\Exceptions\ResponseException;
+use Gazelle\Exceptions\Request\TimeoutException;
 
 
 class RequestRetryDecorator extends AbstractRetryDecorator

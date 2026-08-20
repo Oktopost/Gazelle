@@ -2,6 +2,7 @@
 namespace Gazelle;
 
 
+use Gazelle\Multi\MultiController;
 use Gazelle\Utils\CertificateInfoQuery;
 use Gazelle\Exceptions\GazelleException;
 use Gazelle\Connections\CurlConnection;
@@ -15,6 +16,7 @@ class Gazelle
 	
 	/** @var ConnectionBuilder */
 	private $builder;
+	private array $multiDecorators = [];
 	
 	
 	public function __construct()
@@ -38,6 +40,20 @@ class Gazelle
 	public function addDecorator($decorator, bool $last = true): Gazelle
 	{
 		$this->builder->addDecorators($decorator, $last);
+		return $this;
+	}
+	
+	public function addMultiDecorators($decorators): static
+	{
+		if (is_array($decorators))
+		{
+			$this->multiDecorators = array_merge($this->multiDecorators, $decorators);
+		}
+		else
+		{
+			$this->multiDecorators[] = $decorators;
+		}
+		
 		return $this;
 	}
 	
@@ -84,6 +100,12 @@ class Gazelle
 		return $this->request($url)->queryBody();
 	}
 	
+	public function multi(): MultiGazelle
+	{
+		return new MultiGazelle($this->template, $this->multiDecorators);
+	}
+	
+	
 	public static function file_get_content($url, bool $safe = false, ?GazelleException &$t = null): ?string
 	{
 		return (new Gazelle())->fileGetContent($url, $safe, $t); 
@@ -94,7 +116,7 @@ class Gazelle
 		return CertificateInfoQuery::getCertificateInfo($from);
 	}
 	
-	public static function tryGetCertificateInfo($from, \Throwable &$t = null): ?CertificateInfo
+	public static function tryGetCertificateInfo($from, ?\Throwable &$t = null): ?CertificateInfo
 	{
 		return CertificateInfoQuery::tryGetCertificateInfo($from, $t);
 	}

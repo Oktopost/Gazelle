@@ -14,27 +14,26 @@ use Gazelle\Exceptions\FatalGazelleException;
 
 class RequestParams implements IRequestParams
 {
-	/** @var URL */
-	private $url;
+	private URL $url;
 	
-	private $tags = [];
+	private array $tags = [];
 	
-	private $body;
-	private $bodyParams;
-	private $method;
-	private $headers;
+	private ?string $body;
+	private array	$bodyParams;
+	private string	$method;
+	private array	$headers;
 	
-	private $throwOnFailedResponse	= true;
-	private $connectionTimeout		= 10.0;
-	private $executionTimeout		= 10.0;
-	private $maxRedirects			= 3;
+	private bool	$throwOnFailedResponse	= true;
+	private float	$connectionTimeout		= 10.0;
+	private float	$executionTimeout		= 10.0;
+	private int		$maxRedirects			= 3;
 	
-	private $curlOptions = [
+	private array $curlOptions = [
 		CURLOPT_RETURNTRANSFER	=> 1,
 		CURLOPT_HEADER			=> 1
 	];
 	
-	private $curlInfoOptions = [
+	private array $curlInfoOptions = [
 		CURLINFO_REDIRECT_COUNT,
 		CURLINFO_LOCAL_IP,
 		CURLINFO_LOCAL_PORT,
@@ -58,6 +57,11 @@ class RequestParams implements IRequestParams
 		$this->url = clone $this->url;
 	}
 	
+	
+	public function getTag(int|string $key): mixed
+	{
+		return $this->tags[$key] ?? null;
+	}
 	
 	public function getTags(): array
 	{
@@ -102,7 +106,8 @@ class RequestParams implements IRequestParams
 	
 	public function getIsConnectionReused(): bool
 	{
-		return (bool)($this->curlOptions[CURLOPT_FORBID_REUSE] ?? false);
+		$forbidden = $this->curlOptions[CURLOPT_FORBID_REUSE] ?? false;
+		return !$forbidden;
 	}
 	
 	public function getCurlOptions(): array
@@ -249,7 +254,7 @@ class RequestParams implements IRequestParams
 	
 	public function getBodyParams(): array
 	{
-		return $this->getBodyParams();
+		return $this->bodyParams;
 	}
 	
 	public function getBody(): ?string
@@ -283,11 +288,6 @@ class RequestParams implements IRequestParams
 		return $this->method;
 	}
 	
-	
-	/**
-	 * @param string|URL $url
-	 * @return IRequestParams|static
-	 */
 	public function setURL($url): IRequestParams
 	{
 		if (is_string($url))
@@ -302,41 +302,24 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param int $port
-	 * @return IRequestParams
-	 */
 	public function setPort(int $port): IRequestParams
 	{
 		$this->url->Port = $port;
 		return $this;
 	}
 	
-	/**
-	 * @param string $scheme
-	 * @return IRequestParams|static
-	 */
 	public function setScheme(string $scheme): IRequestParams
 	{
 		$this->url->Scheme = $scheme;
 		return $this;
 	}
 	
-	/**
-	 * @param string $domain
-	 * @return IRequestParams|static
-	 */
 	public function setDomain(string $domain): IRequestParams
 	{
 		$this->url->Host = $domain;
 		return $this;
 	}
 	
-	/**
-	 * @param string $path
-	 * @param bool $clean
-	 * @return IRequestParams|static
-	 */
 	public function addPath(string $path, bool $clean = true): IRequestParams
 	{
 		$current = $this->url->Path;
@@ -366,10 +349,6 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param string $path
-	 * @return IRequestParams|static
-	 */
 	public function setPath(string $path): IRequestParams
 	{
 		$this->url->Path = $path;
@@ -381,28 +360,57 @@ class RequestParams implements IRequestParams
 	 * @param string|string[] $value
 	 * @return IRequestParams|static
 	 */
-	public function setQueryParam(string $name, $value): IRequestParams
+	public function setQueryParam(string $name, $value, bool $escape = true): IRequestParams
 	{
+		if (is_array($value))
+			return $this->setQueryParams([$name => $value], $escape);
+		
+		if ($escape)
+			$value = urlencode($value);
+		
 		$this->url->addQueryParam($name, $value);
+		
 		return $this;
 	}
 	
 	/**
 	 * @param string[]|string[][] $params
-	 * @return IRequestParams|static
+	 * @param bool $escape
+	 * @return static
 	 */
-	public function setQueryParams(array $params): IRequestParams
+	public function setQueryParams(array $params, bool $escape = true): IRequestParams
 	{
+		if ($escape)
+		{
+			foreach ($params as $name => $value)
+			{
+				if (is_array($value))
+				{
+					foreach ($value as $id => $subValue)
+					{
+						$params[$name][$id] = urlencode($subValue);
+					}
+				}
+				else
+				{
+					$params[$name] = urlencode($value);
+				}
+			}
+		}
+		
 		$this->url->addQueryParams($params);
+		
 		return $this;
 	}
 	
 	/**
 	 * @param string $name
 	 * @param string|string[] $value
+	 * @param bool $addHeader
 	 * @return static
 	 */
-	public function setBodyParam(string $name, $value, bool $addHeader = true): IRequestParams
+	public function setBodyParam(string $name, string|array $value,
+		bool $addHeader = true): IRequestParams
 	{
 		return $this->setBodyParams([$name => $value], $addHeader);
 	}
@@ -430,21 +438,12 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param string $method
-	 * @return IRequestParams|static
-	 */
 	public function setMethod(string $method): IRequestParams
 	{
 		$this->method = $method;
 		return $this;
 	}
 	
-	/**
-	 * @param string $header
-	 * @param string|null $value
-	 * @return IRequestParams|static
-	 */
 	public function setHeader(string $header, ?string $value = null): IRequestParams
 	{
 		if (is_null($value))
@@ -470,11 +469,6 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param array $headers
-	 * @param bool $mergeSingleValue
-	 * @return IRequestParams|static
-	 */
 	public function setHeaders(array $headers, bool $mergeSingleValue = false): IRequestParams
 	{
 		if (!$mergeSingleValue)
@@ -497,11 +491,7 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param null|mixed $body
-	 * @return IRequestParams|static
-	 */
-	public function setBody($body = null): IRequestParams
+	public function setBody(mixed $body = null): IRequestParams
 	{
 		if (is_null($body))
 		{
@@ -530,11 +520,7 @@ class RequestParams implements IRequestParams
 		return $this;
 	}
 	
-	/**
-	 * @param array|\stdClass $body
-	 * @return IRequestParams|static
-	 */
-	public function setJsonBody($body): IRequestParams
+	public function setJsonBody(mixed $body): IRequestParams
 	{
 		$this->body = jsonencode($body);
 		
@@ -572,5 +558,29 @@ class RequestParams implements IRequestParams
 	public function getAllCurlOptions(): array
 	{
 		return OptionsConfig::generate($this);
+	}
+	
+	public function copy(RequestParams $from): void
+	{
+		$this->url						= clone $from->url;
+		$this->tags						= $from->tags;
+		$this->body						= $from->body;
+		$this->bodyParams				= $from->bodyParams;
+		$this->method					= $from->method;
+		$this->headers					= $from->headers;
+		$this->throwOnFailedResponse	= $from->throwOnFailedResponse;
+		$this->connectionTimeout		= $from->connectionTimeout;
+		$this->executionTimeout			= $from->executionTimeout;
+		$this->maxRedirects				= $from->maxRedirects;
+		$this->curlOptions				= $from->curlOptions;
+		$this->curlInfoOptions			= $from->curlInfoOptions;
+	}
+	
+	
+	public static function makeCopy(RequestParams $from): RequestParams
+	{
+		$copy = new RequestParams();
+		$copy->copy($from);
+		return $copy;
 	}
 }

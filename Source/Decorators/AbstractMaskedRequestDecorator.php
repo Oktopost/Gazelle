@@ -2,14 +2,17 @@
 namespace Gazelle\Decorators;
 
 
+use Gazelle\Response;
 use Gazelle\IResponse;
 use Gazelle\IRequestParams;
-use Gazelle\AbstractConnectionDecorator;
+use Gazelle\AbstractAnyConnectionDecorator;
+use Gazelle\Multi\MultiResult;
+use Gazelle\Multi\MultiRequest;
+use Gazelle\Multi\IMultiExecutor;
 use Gazelle\Exceptions\GazelleException;
-use Gazelle\Response;
 
 
-abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorator
+ abstract class AbstractMaskedRequestDecorator extends AbstractAnyConnectionDecorator
 {
 	private const MASK_VALUE = '--masked--';
 	
@@ -40,7 +43,7 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 			if ($value)
 			{
 				$value = $this->getMaskedValue();
-				$requestData->setQueryParam($queryParam, $value);
+				$requestData->setQueryParam($queryParam, $value, false);
 			}
 		}
 	}
@@ -101,6 +104,7 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 	protected abstract function onSuccess(IRequestParams $maskedRequest, IResponse $response): void;
 	protected abstract function onError(?IRequestParams $request, ?IResponse $response, \Throwable $t): void;
 	
+	protected function onAborted(bool $isAborted, ?IRequestParams $request, ?IResponse $response): void { }
 	
 	protected function getMaskedHeaders(): array
 	{
@@ -125,7 +129,7 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 		
 		try
 		{
-			$response = $this->invokeChild($requestData);
+			$response = $this->child()->request($requestData);
 			$isSuccess = true;
 		}
 		catch (GazelleException $ge)
@@ -139,4 +143,36 @@ abstract class AbstractMaskedRequestDecorator extends AbstractConnectionDecorato
 		
 		return $response;
 	}
-}
+	
+	public function send(MultiRequest $request, IMultiExecutor $executor): MultiResult
+	{
+		return $this->child()->send($request, $executor);
+	}
+	
+	public function next(float $timeout = 0.1): ?MultiResult
+	{
+		$result = $this->child()->next($timeout);
+		
+		if ($result)
+		{
+			$isSuccess = !$result->hasError();
+			$this->process($isSuccess, $result->request(), $result->response(), $result->error());
+		}
+		
+		return $result;
+	}
+	 
+	 public function sendUsing(MultiResult $result): void
+	 {
+		 $this->child()->sendUsing($result);
+	 }
+	
+	public function abort(MultiResult $result): bool
+	{
+		$isAborted = $this->child()->abort($result);
+		
+		$this->onAborted($isAborted, $result->request(), $result->response());
+		
+		return $isAborted;
+	}
+ }

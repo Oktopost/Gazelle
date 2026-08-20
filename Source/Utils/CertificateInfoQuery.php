@@ -106,7 +106,7 @@ class CertificateInfoQuery
 		return CertificateInfo::parse($certificateData);
 	}
 	
-	public static function tryGetCertificateInfo($from, \Throwable &$t = null, int $timeout = 10): ?CertificateInfo
+	public static function tryGetCertificateInfo($from, ?\Throwable &$t = null, int $timeout = 10): ?CertificateInfo
 	{
 		try
 		{

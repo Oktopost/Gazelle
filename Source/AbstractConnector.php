@@ -48,7 +48,7 @@ abstract class AbstractConnector
 		
 		if ($params)
 		{
-			$request->setQueryParams($params);
+			$request->setQueryParams($params, false);
 		}
 		
 		if ($headers)

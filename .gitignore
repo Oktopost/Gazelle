@@ -9,6 +9,9 @@
 
 # Dependencies
 /vendor/
+/build/
+/.phpunit.cache/
 
 # Other
 test.php
+/composer.lock

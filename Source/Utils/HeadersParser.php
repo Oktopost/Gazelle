@@ -27,9 +27,12 @@ class HeadersParser
 	public static function getRequestHeaders(string $source): array
 	{
 		$source = str_replace("\r", '', $source);
+
+		if (!$source)
+			return [];
+		
 		return array_filter(explode("\n\n", $source));
 	}
-	
 	
 	public static function parseAllHeaders($source, bool $allowMultipleValues = false): array
 	{

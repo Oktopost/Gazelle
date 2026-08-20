@@ -5,6 +5,7 @@ namespace Gazelle\DNS;
 use Objection\LiteSetup;
 use Structura\Arrays;
 
+
 /**
  * @property string|null $IP
  */

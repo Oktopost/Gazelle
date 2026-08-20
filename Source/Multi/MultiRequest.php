@@ -1,0 +1,80 @@
+<?php
+namespace Gazelle\Multi;
+
+
+use Gazelle\HTTPMethod;
+use Gazelle\RequestParams;
+use Gazelle\Exceptions\GazelleException;
+
+
+class MultiRequest extends RequestParams
+{
+	private ?IMultiExecutor	$handler;
+	
+	
+	private function execute(): MultiResult
+	{
+		if (!$this->handler)
+			throw new GazelleException('MutliRequest can not be executed more than once');
+		
+		$handler = $this->handler;
+		$this->handler = null;
+		
+		return $handler->execute($this);
+	}
+	
+	
+	public function __construct(IMultiExecutor $handler)
+	{
+		parent::__construct();
+		
+		$this->handler = $handler;
+	}
+	
+	
+	public function get(): MultiResult
+	{
+		$this->setMethod(HTTPMethod::GET);
+		return $this->execute();
+	}
+	
+	public function put(): MultiResult
+	{
+		$this->setMethod(HTTPMethod::PUT);
+		return $this->execute();
+	}
+	
+	public function post(): MultiResult
+	{
+		$this->setMethod(HTTPMethod::POST);
+		return $this->execute();
+	}
+	
+	public function head(): MultiResult
+	{
+		$this->setMethod(HTTPMethod::HEAD);
+		return $this->execute();
+	}
+	public function delete(): MultiResult
+	{
+		$this->setMethod(HTTPMethod::DELETE);
+		return $this->execute();
+	}
+	
+	public function options(): MultiResult
+	{
+		$this->setMethod(HTTPMethod::OPTIONS);
+		return $this->execute();
+	}
+	
+	public function patch(): MultiResult
+	{
+		$this->setMethod(HTTPMethod::PATCH);
+		return $this->execute();
+	}
+	
+	public function send(): MultiResult
+	{
+		return $this->execute();
+	}
+}

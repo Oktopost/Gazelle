@@ -54,7 +54,7 @@ abstract class AbstractIPProviderCache implements IIPProvider
 
 	public function getRandomIP(): ?string
 	{
-		$ips = $this->getRandomIP();
+		$ips = $this->doGetRandomIP();
 		
 		if (!$ips && $this->parent)
 		{
